@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<devices>
+<device>
+    <mid>11000</mid>
+    <version>1.02</version>
+    <iconpath>/images/icon.png</iconpath>
+    <iconpath2>/images/iconGroup.png</iconpath2>
+    <statueJson2>["Pow","Mod","TemUn","SetTem","TemRec","HeatCoolType","WdSpd","Tur","Quiet","SwUpDn","SwingLfRig","Health","Lig","SwhSlp","SlpMod"]</statueJson2>
+</device>
+<device>
+    <mid>10001</mid>
+    <version>1.0</version>
+    <iconpath>/images/icon.png</iconpath>
+    <iconpath2>/images/iconGroup.png</iconpath2>
+    <statueJson>["Pow","HeatCoolType","Mod","TemUn","SetTem","TemRec","StHt","SvSt","host","name","AllErr","ModelType"]</statueJson>
+    <statueJson2>["Pow","Mod","TemUn","SetTem","TemRec","HeatCoolType","WdSpd","Tur","Quiet","SwUpDn","SwingLfRig","Air","Blo","Health","SvSt","Lig","StHt","SwhSlp","SlpMod","AllErr","ModelType","TemSen"]</statueJson2>
+</device>
+</devices>
