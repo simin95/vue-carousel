@@ -1,31 +1,18 @@
 <template>
     <div id="selectModel"
          style="position:relative;display:block;text-align:center;position:absolute;width:100%">
-      <!-- <div>
-        <span v-if="showText" ref="txtmodel" id="txtmodel"
-              style="font-size:1rem;display:block;color:white;text-shadow: 0 0 10px #FFFFFF;margin-top: .3rem">{{this.computedData[0].text}}</span>
-      </div> -->
       <section class="container_mode" @touchstart="touchstart_mode"  @touchmove='touchmove_mode' @touchend="touchend_mode">
         <div ref="carousel_mode" id="carousel_mode" class="panels-backface-invisible">
           
           <figure
             v-for="(item,index) in computedData"
             :key="index"
-            :class="{hidden:selectId!=item.id && !touching && controlMode == 1}"
+            :class="{hidden:selectId!=item.id && !isEdit && controlMode == 1}"
             @touchstart="changeMode"
             style="margin: 0 auto">
-            <div v-if="showNum" style="font-size: 32px; color: #fff">{{item.num}}</div>
-            <img v-if="showImg" :src="item.imgSrc" style="height: 2.5rem">
+            <div v-if="showNum" style="font-size: 32px; color: #fff">{{item.content}}</div>
+            <img v-if="showImg" :src="item.content" style="height: 2.5rem">
           </figure>
- 
-          <!-- <figure @touchstart="changeMode" id="mode_1"
-                  style="opacity: 1; transform: rotateY(0deg) translateZ(523px); background-color:`` none;">
-            <img src="static/images/index_mode_auto.png" style="height:1.5rem"/>
-          </figure>
-          <figure  @touchstart="changeMode" id="mode_2"
-                  style="opacity: 1; transform: rotateY(0deg) translateZ(523px); background-color: none;">
-            <img src="static/images/index_mode_cool.png" style="height:1.5rem"/>
-          </figure> -->
 
         </div>
       </section>
@@ -33,6 +20,10 @@
 </template>
 
 <script>
+// 常量定义
+const SLIPMODE = 1;
+const CLICKMODE = 2;
+
 //横滚控件
 // eslint-disable-next-line
 /* eslint-disable */
@@ -45,7 +36,8 @@ function Carousel(el) {
   this.totalPanelCount = this.element.children.length;
   this.theta = 0;
   this.panelWith = 0;
-  this.isHorizontal = true;
+  // true为水平，false为竖直
+  this.isHorizontal = false;
 }
 
 Carousel.prototype.modify = function() {
@@ -69,14 +61,14 @@ Carousel.prototype.modify = function() {
     panel.style.opacity = 1;
     // panel.style.backgroundColor = 'hsla(' + angle + ', 100%, 50%, 0.8)';
     // rotate panel, then push it out in 3D space
-    // 在此处配置radius可改变布局密度
+    // 在此处配置radius可改变布局密度 , 在此可修改angle来改变排布顺序
     panel.style['transform'] = `${this.rotateFn}(${angle}deg) translateZ(${this.radius*1.5}px)`;
 //    this.rotateFn + '(' + angle + 'deg) translateZ(' + this.radius + 'px)';
     panel.id = i;
   }
 
   // hide other panels
-  // for (  ; i < this.totalPanelCount; i++ ) {
+  // for (i=0 ; i < this.totalPanelCount; i++ ) {
   //     panel = this.element.children[i];
   //     panel.style.opacity = 0;
   //     panel.style[ transformProp ] = 'none';
@@ -90,6 +82,7 @@ Carousel.prototype.modify = function() {
 
 Carousel.prototype.transform = function() {
   this.element.style['transform'] = `translateZ(-${this.radius*1.5}px) ${this.rotateFn}(${this.rotation}deg)`;
+  // this.element.style['transition'] = `transform .8s`
 //    'translateZ(-' +
 //    this.radius +
 //    'px) ' +
@@ -100,13 +93,21 @@ Carousel.prototype.transform = function() {
 };
 export default {
   name: 'Carousel',
+  props: {
+    propData:{
+      type: Array,
+      default(){
+        return [101,102,103,104,105,106,107,108,109,110]
+      }
+    },
+  },
   data() {
     return {
       carousel: '',
       Selectmode: 1, //当前选择值
       identifier: -1, //手指唯一id
       isEditTime: '',
-      isEdit: '',
+      isEdit: false,
       lastX_mode: 0, // 上一次位置
       lastMoveStart_mode: 0,
       lastMoveTime_mode: 0,
@@ -115,95 +116,22 @@ export default {
       lastcarouselrotation_mode: 0, //最后温度滚动角度
       CurrentMode: 0,
       modeCarousel: '',
-
-      ACMode: {
-        //模式定义
-        cool: 1,
-        auto: 0,
-        heat: 4,
-        fan: 3,
-        dry: 2,
-        energy: 5,
-      },
+      
       // 所有的状态/数据定义
-      propData: [
-        {
-          id: 0,
-          num: 0,
-          text: '自动',
-          imgSrc: 'static/images/index_mode_auto.png'
-        },
-        {
-          id: 1,
-          num: 1,
-          text: '制冷',
-          imgSrc: 'static/images/index_mode_cool.png'
-        },
-        {
-          id: 2,
-          num: 2,
-          text: '除湿',
-          imgSrc: 'static/images/index_mode_dry.png'
-        },
-        {
-          id: 3,
-          num: 3,
-          text: '送风',
-          imgSrc: 'static/images/index_mode_fan.png'
-        },
-        {
-          id: 4,
-          num: 4,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 5,
-          num: 5,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 6,
-          num: 6,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 7,
-          num: 7,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 8,
-          num: 8,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 9,
-          num: 9,
-          text: '',
-          imgSrc: ''
-        },
-        {
-          id: 10,
-          num: 10,
-          text: '',
-          imgSrc: ''
-        },
-      ],
+      //propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
+      // propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png','static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
       showNum: true,
       showImg: false,
-      showText: true,
       // 组件状态控制：
-      touching: false,
+      // isEdit: false,
+      selectOrderId: 0,
       selectId: 0,
       // 这里设想了2种控制模式：
       // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
       // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
-      controlMode: 2,
+      controlMode: 1,
+      // 水平显示or竖直显示
+      horizontal: true,
       // 还需配置的项：容器大小，元素大小（）
     };
   },
@@ -211,19 +139,28 @@ export default {
     // 为解决传入值数量可能过少的问题，通过传入值的数据来重新渲染一份用于循环渲染的数据
     // 规则：2个3个时乘5,4个时乘3,5-9个时乘2,10个及以上不处理
     computedData() {
-      const len = this.propData.length;
+      let tmpPropData = [];
+      for(let index in this.propData) {
+        let tmpItem = {id:index,content:this.propData[index]}
+        tmpPropData.push(tmpItem)
+      }
+      console.log("所有子项的数据: ")
+      console.log(tmpPropData)
+      // console.log(this.carousel.isHorizontal)
+
+      const len = tmpPropData.length;
       let result = [];
       switch (len) {
         case 2:
         case 3:
           for(let i=0;i<5;i++){
-            result.push(...this.propData)
+            result.push(...tmpPropData)
           }
           return result;
           break;
         case 4:
           for(let i=0;i<3;i++){
-            result.push(...this.propData)
+            result.push(...tmpPropData)
           }
           return result;
           break;
@@ -233,19 +170,19 @@ export default {
         case 8:
         case 9:
           for(let i=0;i<2;i++){
-            result.push(...this.propData)
+            result.push(...tmpPropData)
           }
           return result;
           break;
         default:
-          result.push(...this.propData)
+          result.push(...tmpPropData)
           return result;
           break;
       }
     },
     // 给所有子元素的动态绑定样式，用于隐藏显示
     itemStyle() {
-      if(this.touching) {
+      if(this.isEdit) {
         
       } else {
         return {visibility: 'hidden'}
@@ -255,7 +192,6 @@ export default {
   watch: {
     CurrentMode() {
       //普通的watch监听,CurrentMode变化时触发
-      // this.setModeTxt();
     },
   },
   mounted() {
@@ -267,24 +203,18 @@ export default {
       this.carousel = new Carousel(document.getElementById('carousel_mode'));
       this.modeCarousel = this.carousel;
       this.carousel.totalPanelCount = this.computedData.length;
+      this.carousel.isHorizontal = this.horizontal;
       this.carousel.modify();
       const carousel_mode = document.getElementById('carousel_mode');
       const figures = carousel_mode.getElementsByTagName('figure');
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.width = `${this.carousel.panelWith}px`;
       }
-      // for (let i = 1; i <= 10; i += 1) {
-      //   if (i !== this.Selectmode) {
-      //     console.log(i)
-      //   }
-      // }
-      // this.setModeTxt();
     },
 
     touchstart_mode(event) {
-      console.log("233")
       // 状态监控：
-      this.touching = true;
+      this.isEdit = true;
 
       this.identifier = event.changedTouches[0].identifier;
       this.isEdit = true;
@@ -292,8 +222,7 @@ export default {
       if (event.targetTouches.length === 1) {
         event.preventDefault(); // 阻止浏览器默认事件，重要
         const touch = event.targetTouches[0];
-        this.lastMoveStart_mode = this.StartX_mode = this.lastX_mode =
-          touch.pageX;
+        this.lastMoveStart_mode = this.StartX_mode = this.lastX_mode = (this.horizontal)?touch.pageX:touch.pageY;
         this.lastMoveTime_mode = event.timeStamp || Date.now();
         this.initR_mode = this.carousel.rotation;
         const carousel_mode = document.getElementById('carousel_mode');
@@ -314,12 +243,14 @@ export default {
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
 //        const touch = event.targetTouches[0];
-        const nowX = event.touches[0].pageX;
+        const nowX = (this.horizontal)?event.touches[0].pageX:event.touches[0].pageY;
 //        const dir = nowX - this.lastX_mode > 0 ? 1 : -1;
         this.lastX_mode = nowX;
         //根据move移动距离移动数字
-        const moveX = nowX - this.StartX_mode;
-        const valpresect = (moveX / this.carousel.panelWith) * this.carousel.theta;
+        // let  moveX = nowX - this.StartX_mode;
+        let moveX = (this.horizontal)?(nowX - this.StartX_mode):(this.StartX_mode - nowX);
+        
+        let valpresect = (moveX / this.carousel.panelWith) * this.carousel.theta;
         let ChangeRotate = valpresect;
         ChangeRotate = parseInt(ChangeRotate);
         if (this.carousel.rotation !== ChangeRotate) {
@@ -403,9 +334,12 @@ export default {
       this.carousel.transform();
       this.lastcarouselrotation_mode = this.carousel.rotation;
       // 状态监控：
-      this.touching = false;
-      let selectIdTmp = Math.round(this.carousel.rotation/this.carousel.theta)%this.carousel.totalPanelCount
-      this.selectId = (this.carousel.rotation<=0)?-selectIdTmp:this.carousel.totalPanelCount - selectIdTmp
+      this.isEdit = false;
+      let selectIdTmp = Math.round(this.carousel.rotation/this.carousel.theta)%this.carousel.totalPanelCount;
+      this.selectOrderId = (this.carousel.rotation<=0)?-selectIdTmp:this.carousel.totalPanelCount - selectIdTmp;
+      this.selectId = this.selectOrderId % this.propData.length;
+      // 向父组件传出事件：
+      this.$emit('currentChange',this.selectId);
 
       // 这TM又是什么？
       // const roleval = this.carousel.rotation / this.carousel.theta;
@@ -443,7 +377,7 @@ export default {
       //   this.CurrentMode = this.ACMode.heat;
       // }
 
-      console.log(`this.CurrentMode:${this.CurrentMode}`);
+      // console.log(`this.CurrentMode:${this.CurrentMode}`);
 
       // for (let i = 1; i <= 10; i += 1) {
       //   if (i !== this.Selectmode) {
@@ -496,15 +430,12 @@ export default {
     },
     changeMode(e) {
       if(this.controlMode === 2){
-        const str = e.currentTarget.id;
-        const sed = str.indexOf('_');
-        let index = str.substring(sed + 1, str.length);
-        if (index > 5) {
-          index -= 5;
-        }
-        this.CurrentMode = index - 1;
-        console.log(`this.CurrentMode:${this.CurrentMode}`);
-        this.carousel.rotation = -(index - 1) * 36;
+        const changeTo = e.currentTarget.id;
+        let index = changeTo;
+        // 这里切换时是不过分界线的，如果添加动画效果要注意添加越过边界处理逻辑
+        this.carousel.rotation = -(index) * this.carousel.theta;
+        // e.style['transitionDuration'] = `.5s`
+        // this.carousel.element.style = `transitionDuration: 2s`
         this.carousel.transform();
       }
     },
@@ -534,29 +465,6 @@ export default {
       //        }
       //      }
     },
-    setModeTxt() {
-      let modeTxt = '';
-      switch (this.CurrentMode) {
-        case 0:
-          modeTxt = '自动';
-          break;
-        case 1:
-          modeTxt = '制冷';
-          break;
-        case 2:
-          modeTxt = '除湿';
-          break;
-        case 3:
-          modeTxt = '扫风';
-          break;
-        case 4:
-          modeTxt = '制热';
-          break;
-        default:
-          break;
-      }
-      this.$refs.txtmodel.innerText = modeTxt;
-    },
   },
 };
 </script>
@@ -565,13 +473,17 @@ export default {
 <style scoped>
   .hidden{
     visibility: hidden;
-    transition: transform 2s
+    -webkit-transition: -webkit-transform 2s;
+    -moz-transition: -moz-transform 2s;
+    -o-transition: -o-transform 2s;
+    transition: transform 2s;
     /* transform: .2s */
   }
 
   .container_mode {
-    width: 20%;
-    height: 2rem;
+    /* 在此可配置子项密度 */
+    width: 30%;
+    height: 3rem;
     position: relative;
     margin: 0rem auto;
     -webkit-perspective: 1100px;

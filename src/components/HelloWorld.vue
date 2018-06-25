@@ -1,11 +1,16 @@
 <template>
   <div class="hello">
-    <carousel></carousel>
+    <carousel
+      class="carousel-wrapper"
+      @currentChange="handleChange"
+      :propData="carouselData"
+      ></carousel>
+    <div class="test"></div>
   </div>
 </template>
 
 <script>
-import Carousel from './carousel/Carousel'
+import Carousel from './carousel/Carousel';
 export default {
   name: 'HelloWorld',
   components: {
@@ -13,7 +18,13 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      // carouselData: [1,2,3,4,5,6,7]
+    }
+  },
+  methods: {
+    handleChange: function(args) {
+      console.log("当前选择到的id：" + args)
     }
   }
 }
@@ -21,6 +32,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.carousel-wrapper{
+  /* width: 100px;
+  overflow: hidden; */
+}
 html {
   background-color: #ccc;
 }
