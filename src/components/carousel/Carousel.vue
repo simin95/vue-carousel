@@ -1,12 +1,12 @@
 <template>
-    <div id="selectModel" class="carousel-wrapper" :style="{width:options.width,marginLeft:options.marginLeft}">
-      <section v-if="options.isShow" class="container_mode" :style="{width:options.density,height:options.height}" @touchstart="touchstart_mode"  @touchmove='touchmove_mode' @touchend="touchend_mode">
-        <div ref="carousel_mode" id="carousel_mode" class="panels-backface-invisible">
+    <div ref="wrapper" class="carousel-wrapper" :style="{width:options.width,marginLeft:options.marginLeft}">
+      <section v-if="options.isShow" class="container_mode" :style="{width:options.density,height:options.height}" @touchstart="touchstart"  @touchmove='touchmove' @touchend="touchend">
+        <div ref="itemsWrapper" id="itemsWrapper" class="panels-backface-invisible">
           
           <figure
             v-for="(item,index) in computedData"
             :key="index"
-            :class="{hidden:selectId!=item.id && !isEdit && options.controlMode == 1}"
+            :class="{hidden:selectId!=item.id && !isEdit && options.controlMode == 1,showThreeItems:index!=showThreeId[0]&&index!=showThreeId[1]&&index!=showThreeId[2]&&!isEdit&&options.threeOrAll==1}"
             @touchstart="changeMode"
             style="margin: 0 auto">
             <div v-if="options.isShow && options.showNumOrImg" :style="{fontSize:options.fontSize}">{{item.content}}</div>
@@ -47,6 +47,7 @@ Carousel.prototype.modify = function() {
   ];
 
   this.rotateFn = this.isHorizontal ? 'rotateY' : 'rotateX';
+  // this.rotateFn = 'rotateY';
 
   this.theta = 360 / this.totalPanelCount;
 
@@ -111,8 +112,13 @@ export default {
           isShow: true,
           showNumOrImg: true,
           controlMode: 1,
-          // 水平显示or竖直显示
           horizontal: true,
+          threeOrAll: true,
+          width: '50%',
+          marginLeft: '30%',
+          density: '30%',
+          height: '3.5rem',
+          fontSize: '32px',
         };
       },
     },
@@ -140,17 +146,17 @@ export default {
       // propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png','static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
 
       // 外部状态/数据定义，通过父组件配置options传入
-      options: {
-        isShow: true,
-        showNumOrImg: false,
-        // 这里设想了2种控制模式：
-        // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
-        // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
-        controlMode: 2,
-        // 水平显示or竖直显示
-        horizontal: false,
-        // 还需配置的项：容器大小，元素大小（）
-      },
+      // options: {
+      //   isShow: true,
+      //   showNumOrImg: false,
+      //   // 这里设想了2种控制模式：
+      //   // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
+      //   // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
+      //   controlMode: 2,
+      //   // 水平显示or竖直显示
+      //   horizontal: false,
+      //   // 还需配置的项：容器大小，元素大小（）
+      // },
     };
   },
   computed: {
@@ -204,25 +210,41 @@ export default {
         return { visibility: 'hidden' };
       }
     },
+    showThreeId() {
+      let threeId = [];
+      this.selectOrderId - 1 < 0
+        ? threeId.push(this.computedData.length - 1)
+        : threeId.push(this.selectOrderId - 1);
+      threeId.push(this.selectOrderId);
+      this.selectOrderId + 1 > this.computedData.length - 1
+        ? threeId.push(0)
+        : threeId.push(this.selectOrderId + 1);
+      return threeId;
+    },
   },
   watch: {},
   mounted() {
     this.init_Mode();
+    // panel.style['transform'] = `${this.rotateFn}(${angle}deg) translateZ(${this.radius * 1.5}px)`;
+    let wrapper = this.$refs.wrapper;
+    // wrapper.style['transform'] = `rotate(90deg)`
   },
   methods: {
     init_Mode() {
-      this.carousel = new Carousel(document.getElementById('carousel_mode'));
+      // document.getElementById('itemsWrapper')
+      // this.$el.querySelector("#itemsWrapper")
+      this.carousel = new Carousel(this.$el.querySelector("#itemsWrapper"));
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.isHorizontal = this.options.horizontal;
       this.carousel.modify();
-      const carousel_mode = document.getElementById('carousel_mode');
-      const figures = carousel_mode.getElementsByTagName('figure');
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const figures = itemsWrapper.getElementsByTagName('figure');
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.width = `${this.carousel.panelWith}px`;
       }
     },
 
-    touchstart_mode(event) {
+    touchstart(event) {
       // 状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
@@ -235,9 +257,9 @@ export default {
           : touch.pageY;
         this.lastMoveTime = event.timeStamp || Date.now();
         this.initR_mode = this.carousel.rotation;
-        const carousel_mode = document.getElementById('carousel_mode');
-        const figures = carousel_mode.getElementsByTagName('figure');
-        carousel_mode.style.transition = 'transform 0s';
+        const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+        const figures = itemsWrapper.getElementsByTagName('figure');
+        itemsWrapper.style.transition = 'transform 0s';
         for (let i = 0; i < figures.length; i += 1) {
           figures[i].style.transition = 'transform 0s';
         }
@@ -249,7 +271,7 @@ export default {
         //        }
       }
     },
-    touchmove_mode(event) {
+    touchmove(event) {
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
         //        const touch = event.targetTouches[0];
@@ -281,12 +303,12 @@ export default {
         }
       }
     },
-    touchend_mode(event) {
+    touchend(event) {
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
-      const carousel_mode = document.getElementById('carousel_mode');
-      const figures = carousel_mode.getElementsByTagName('figure');
-      carousel_mode.style.transition = 'transform 0.2s';
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const figures = itemsWrapper.getElementsByTagName('figure');
+      itemsWrapper.style.transition = 'transform 0.2s';
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.transition = 'transform 0.2s';
       }
@@ -364,9 +386,9 @@ export default {
     },
     setId(id) {
       // 此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
-      const carousel_mode = document.getElementById('carousel_mode');
-      const figures = carousel_mode.getElementsByTagName('figure');
-      carousel_mode.style.transition = 'transform 0s';
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const figures = itemsWrapper.getElementsByTagName('figure');
+      itemsWrapper.style.transition = 'transform 0s';
 
       //滚动到对应角度
       this.selectId = id;
@@ -388,6 +410,9 @@ export default {
   transition: transform 2s;
   /* transform: .2s */
 }
+.showThreeItems {
+  visibility: hidden;
+}
 
 .carousel-wrapper {
   position: absolute;
@@ -397,11 +422,19 @@ export default {
   width: 30%;
   margin-left: 10px;
 }
+.carousel-wrapper:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
 
 .container_mode {
   /* 在此可配置子项密度 */
   width: 30%;
-  height: 3rem;
+  height: 3.5rem;
   /* padding: 50%; */
 
   position: relative;
@@ -412,7 +445,7 @@ export default {
   perspective: 1100px;
 }
 
-#carousel_mode {
+#itemsWrapper {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -422,21 +455,21 @@ export default {
   transform-style: preserve-3d;
 }
 
-.ready #carousel_mode {
+.ready #itemsWrapper {
   -webkit-transition: -webkit-transform 1s;
   -moz-transition: -moz-transform 1s;
   -o-transition: -o-transform 1s;
   transition: transform 1s;
 }
 
-#carousel_mode.panels-backface-invisible figure {
+#itemsWrapper.panels-backface-invisible figure {
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
 
-#carousel_mode figure {
+#itemsWrapper figure {
   display: block;
   position: absolute;
   height: auto;
@@ -444,7 +477,7 @@ export default {
   text-align: center;
 }
 
-.ready #carousel_mode figure {
+.ready #itemsWrapper figure {
   -webkit-transition: opacity 1s, -webkit-transform 1s;
   -moz-transition: opacity 1s, -moz-transform 1s;
   -o-transition: opacity 1s, -o-transform 1s;

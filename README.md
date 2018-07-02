@@ -1,31 +1,109 @@
 # vue-carousel
+![img](./static/images/001.gif)
+![img](./static/images/002.gif)
+![img](./static/images/003.gif)
+## 这是什么？
 
-> 一个滑轮组件，通过一个数组配置出子项，考虑两种使用场景：显示数字或图片，数组内元素未数字或图片url，
-  设计了两种控制模式，以及水平垂直的显示；在滑动完成后会向父组件派发事件附带当前选中项的index值，父组件监听使用
+> 一个滑轮组件，通过一个数组配置出子项，考虑两种使用场景：显示数字或图片，数组内元素为数字或图片url
+
+> 设计了两种控制模式: 
+
+    1. 滑动选择控制，只显示当前的选中元素，滑动时出现左右元素
+    2. 滑动+点选控制，显示当前及左右两侧的两个个或多个元素，可滑动调节也可点击直接跳至被点击元素
+
+> 水平竖直的方向可配置
+
+> 在滑动完成后会向父组件派发事件并附带当前选中项的id值，父组件监听使用；并且为了方便直接读取或设置此组件当前状态，还附带了get和set方法供父组件调用
+
+> 组件的显示/隐藏，布局位置，子项高度，字体大小需配置
 
 ## 怎么用？
 
-...
+1. 将Carousel.vue文件拷贝到你的工程中
 
-* 配置项：
+2. 在父组件中引入,配置并使用：
+``` html
+    <carousel
+      ref="carousel1"
+      class="carousel-wrapper"
+      @currentChange="handleChange"
+      :propData="carouselData"
+      :options="carouselOptions"
+    ></carousel>
+```
 ``` javascript
-      // 所有的状态/数据定义，考虑两种使用场景：显示数字或图片
-      propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
-      // propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png','static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
-      showNum: true,
-      showImg: false,
-      // 这里设想了2种控制模式：
-      // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
-      // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
-      controlMode: 2,
-      // 水平显示or竖直显示
-      horizontal: true,
-      // 还需配置的项：容器大小，元素大小（）
+  import Carousel from './carousel/Carousel';
+...
+components: {
+  Carousel,
+},
+data() {
+    return {
+      // 将data和options分开传入的原因是：在组件使用过程中，样式一般不变，数据可能会变
+      carouselData: [1, 2, 3, 4, 5, 6, 7],
+      // carouselData: [
+      //   'static/images/index_mode_auto.png',
+      //   'static/images/index_mode_cool.png',
+      //   'static/images/index_mode_dry.png',
+      //   'static/images/index_mode_fan.png',
+      // ],
+
+      carouselOptions: {
+        // 是否显示
+        isShow: true,
+
+        // 显示数字还是图片
+        showNumOrImg: true,
+
+        // 水平显示or竖直显示
+        horizontal: true,
+
+        // 这里设想了2种控制模式：
+        // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
+        // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
+        controlMode: 2,
+        // 显示3个or全部显示（有时会有只显示当前及左右两边的值(共三个)的需求，在组件内部实现了隐藏效果）
+        threeOrAll: true,
+
+        // 定位布局配置项：容器的水平位置绝对定位与窗口
+        // 组件宽度
+        width: '50%',
+        marginLeft: '30%',
+
+        // 子项密度,值越小越密集；一般设置为30%，一次显示3个较好 （bug:竖直显示不适用，需调整carousel半径大小）
+        // density: '30%',
+
+        // 子项容器高度 （似乎这两个值之间存在某种联系，需要一起按比例改变）
+        height: '3.5rem',
+        // 字体大小
+        fontSize: '32px'
+        
+        // 文字颜色及背景颜色在css中设置即可
+      },
+    };
+  },
+  methods: {
+    // 手动操作滑动组件改变选择到的id值后会触发此事件
+    handleChange: function(args) {
+      console.log('当前选择到的id：' + args);
+    },
+
+    // get方法，name为区分多个carousel的标志；另一种实现方式：使用vuex来获取carousel组件的selectId属性
+    getCarouselId: function(name) {
+      let current = this.$refs[name].selectId;
+      console.log('当前' + name + '组件被选择的子项id是：' + current);
+      return current;
+    },
+
+    // set方法，name为区分多个carousel的标志，id为变化到的子项id；实现思路：在父组件中调用子组件自己的setId()方法
+    setCarouselId: function(name, id) {
+      this.$refs[name].setId(id);
+    },
+  },
+};
 ```
 
-
-## Build Setup
-
+## 在本工程中可预览效果：
 ``` bash
 # install dependencies
 npm install
@@ -40,6 +118,13 @@ npm run build
 npm run build --report
 ```
 
+## 其他
+> 还缺少的部分：
+1. 子项有边界时的处理方式
+2. 一些合适的动画效果
+3. 未使用eslint格式化代码
+4. 因子项绝对定位于父容器，直接给
 
 > 已知bug：
-1. 组件在进行挂载渲染时竟然有动画，但没有任何代码写了动画
+1. 组件挂载的过程似乎有动画效果
+
