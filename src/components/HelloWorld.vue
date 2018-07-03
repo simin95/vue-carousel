@@ -68,12 +68,15 @@ export default {
         horizontal: true,
         // 显示3个or全部显示（有时会有只显示当前及左右两边的值(共三个)的需求，在组件内部实现了隐藏效果）
         threeOrAll: true,
-        // 定位布局配置项：容器的水平位置绝对定位与窗口
-        // 组件宽度
+        // 打开/关闭点选，某些场景需要这样设置，点选和滑动有冲突，比较鸡肋的点选功能
+        clickAble: false,
+
+        // 定位布局配置项：容器的水平位置绝对定位于窗口
+        // 组件宽度及水平定位
         width: '50%',
         marginLeft: '30%',
-        // 子项密度,值越小越密集；一般设置为30%，一次显示3个较好 （bug:竖直显示不适用，需调整carousel半径大小）
-        // density: '30%',
+        // 子项间距,值越小越密集
+        spaceBetween: '3rem',
         // 子项容器高度 （似乎这两个值之间存在某种联系，需要一起按比例改变）
         height: '3.5rem',
         // 字体大小
@@ -90,11 +93,14 @@ export default {
       carouselOptionsTwo: {
         isShow: true,
         showNumOrImg: false,
-        controlMode: 1,
+        controlMode: 2,
         horizontal: true,
         threeOrAll: false,
+        clickAble: false,
         width: '50%',
         marginLeft: '30%',
+        // 子项间距,值越小越密集
+        spaceBetween: '5rem',
         height: '3.5rem',
         fontSize: '32px'
       },
@@ -113,6 +119,8 @@ export default {
         width: '50%',
         marginLeft: '30%',
         height: '3.5rem',
+        // 子项间距,值越小越密集
+        spaceBetween: '3rem',
         fontSize: '32px'
       },
     };

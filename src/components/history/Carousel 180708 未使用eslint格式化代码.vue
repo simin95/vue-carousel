@@ -1,125 +1,100 @@
 <template>
-  <div 
-    ref="wrapper" 
-    class="carousel-wrapper" 
-    :style="{width:options.width,marginLeft:options.marginLeft}"
-    @touchstart="_touchstart"
-    @touchmove="_touchmove"
-    @touchend="_touchend">
-    <section 
-      v-if="options.isShow" 
-      class="container_mode" 
-      :style="{height:options.height}">
-      <div 
-        ref="itemsWrapper" 
-        id="itemsWrapper" 
-        class="panels-backface-invisible"
-        :style="{width:options.spaceBetween,height:options.spaceBetween}"
-        >
-        <figure
-          v-for="(item,index) in computedData"
-          :key="index"
-          :class="{hidden:selectId!=item.id && !isEdit 
-                     && options.controlMode == 1,
-                   showThreeItems:index!=showThreeId[0]
-                     &&index!=showThreeId[1]
-                     &&index!=showThreeId[2]&&!isEdit
-          &&options.threeOrAll==1}"
-          @touchstart="changeMode"
-          style="margin: 0 auto">
-          <div 
-            v-if="options.isShow && options.showNumOrImg" 
-            :style="{height:options.height,fontSize:options.fontSize}">{{ item.content }}</div>
-          <img 
-            v-if="options.isShow && !options.showNumOrImg" 
-            :src="item.content" 
-            :style="{height:options.height}">
-        </figure>
+    <div ref="wrapper" class="carousel-wrapper" :style="{width:options.width,marginLeft:options.marginLeft}">
+      <section v-if="options.isShow" class="container_mode" :style="{width:options.density,height:options.height}" @touchstart="touchstart"  @touchmove='touchmove' @touchend="touchend">
+        <div ref="itemsWrapper" id="itemsWrapper" class="panels-backface-invisible">
+          
+          <figure
+            v-for="(item,index) in computedData"
+            :key="index"
+            :class="{hidden:selectId!=item.id && !isEdit && options.controlMode == 1,showThreeItems:index!=showThreeId[0]&&index!=showThreeId[1]&&index!=showThreeId[2]&&!isEdit&&options.threeOrAll==1}"
+            @touchstart="changeMode"
+            style="margin: 0 auto">
+            <div v-if="options.isShow && options.showNumOrImg" :style="{fontSize:options.fontSize}">{{item.content}}</div>
+            <img v-if="options.isShow && !options.showNumOrImg" :src="item.content" style="height: 2.5rem">
+          </figure>
 
-      </div>
-    </section>
-  </div>
+        </div>
+      </section>
+    </div>
 </template>
 
 <script>
-//  //  常量定义
-//  const SLIPMODE = 1;
-//  const CLICKMODE = 2;
+// 常量定义
+const SLIPMODE = 1;
+const CLICKMODE = 2;
 
-//  横滚控件
-//  eslint-disable-next-line
-//  /* eslint-disable */
+//横滚控件
+// eslint-disable-next-line
+/* eslint-disable */
 function Carousel(el) {
   this.element = el;
   this.rotation = 0;
-  //  选定的序号
+  // 选定的序号
   this.panelCount = 0;
-  //  总共有多少序号（子元素个数）
+  // 总共有多少序号（子元素个数）
   this.totalPanelCount = this.element.children.length;
   this.theta = 0;
   this.panelWith = 0;
-  //  true为水平，false为竖直
+  // true为水平，false为竖直
   this.isHorizontal = false;
 }
 
-Carousel.prototype.modify = function modify() {
-  let panel;
-  let angle;
-  // let i;
+Carousel.prototype.modify = function() {
+  let panel, angle, i;
 
-  this.panelSize = this.element[
+  this.panelWith = this.panelSize = this.element[
     this.isHorizontal ? 'offsetWidth' : 'offsetHeight'
   ];
-  this.panelWith = this.panelSize;
+
   this.rotateFn = this.isHorizontal ? 'rotateY' : 'rotateX';
-  //  this.rotateFn = 'rotateY';
+  // this.rotateFn = 'rotateY';
 
   this.theta = 360 / this.totalPanelCount;
 
-  //  do some trig to figure out how big the carousel
-  //  is in 3D space
+  // do some trig to figure out how big the carousel
+  // is in 3D space
   this.radius = Math.round(
-    this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount)
+    this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount),
   );
 
-  for (let i = 0; i < this.totalPanelCount; i += 1) {
+  for (let i = 0; i < this.totalPanelCount; i++) {
     panel = this.element.children[i];
     angle = this.theta * i;
     panel.style.opacity = 1;
-    //  panel.style.backgroundColor = 'hsla(' + angle + ', 100%, 50%, 0.8)';
-    //  rotate panel, then push it out in 3D space
-    //  在此处配置radius可改变布局密度 , 在此可修改angle来改变排布顺序
-    panel.style.transform = `${this.rotateFn}(${angle}deg) translateZ(${this
+    // panel.style.backgroundColor = 'hsla(' + angle + ', 100%, 50%, 0.8)';
+    // rotate panel, then push it out in 3D space
+    // 在此处配置radius可改变布局密度 , 在此可修改angle来改变排布顺序
+    panel.style['transform'] = `${this.rotateFn}(${angle}deg) translateZ(${this
       .radius * 1.5}px)`;
-    //     this.rotateFn + '(' + angle + 'deg) translateZ(' + this.radius + 'px)';
+    //    this.rotateFn + '(' + angle + 'deg) translateZ(' + this.radius + 'px)';
     panel.id = i;
   }
 
-  //  hide other panels
-  //  for (i=0 ; i < this.totalPanelCount; i++ ) {
-  //      panel = this.element.children[i];
-  //      panel.style.opacity = 0;
-  //      panel.style[ transformProp ] = 'none';
-  //  }
+  // hide other panels
+  // for (i=0 ; i < this.totalPanelCount; i++ ) {
+  //     panel = this.element.children[i];
+  //     panel.style.opacity = 0;
+  //     panel.style[ transformProp ] = 'none';
+  // }
 
-  //  adjust rotation so panels are always flat
+  // adjust rotation so panels are always flat
   this.rotation = Math.round(this.rotation / this.theta) * this.theta;
 
   this.transform();
 };
 
-Carousel.prototype.transform = function transform() {
-  this.element.style.transform = `translateZ(-${this.radius * 1.5}px) ${
+Carousel.prototype.transform = function() {
+  this.element.style['transform'] = `translateZ(-${this.radius * 1.5}px) ${
     this.rotateFn
   }(${this.rotation}deg)`;
-  //  this.element.style['transition'] = `transform .8s`
-  //     'translateZ(-' +
-  //     this.radius +
-  //     'px) ' +
-  //     this.rotateFn +
-  //     '(' +
-  //     this.rotation +
-  //     'deg)';
+  // this.element.style['transition'] = `transform .8s`
+  //    'translateZ(-' +
+  //    this.radius +
+  //    'px) ' +
+  //    this.rotateFn +
+  //    '(' +
+  //    this.rotation +
+  //    'deg)';
 };
 export default {
   name: 'Carousel',
@@ -128,7 +103,7 @@ export default {
       type: Array,
       default() {
         return [111, 2, 3, 4, 5, 6, 7, 8, 999];
-      }
+      },
     },
     options: {
       type: Object,
@@ -139,108 +114,104 @@ export default {
           controlMode: 1,
           horizontal: true,
           threeOrAll: true,
-          clickAble: false,
           width: '50%',
           marginLeft: '30%',
+          density: '30%',
           height: '3.5rem',
           fontSize: '32px',
-          spaceBetween: '1rem'
         };
-      }
-    }
+      },
+    },
   },
   data() {
     return {
-      //  以下为内部属性
-      //  实例出的carousel对象
+      // 以下为内部属性
+      // 实例出的carousel对象
       carousel: '',
-      //  是否处于拖拽状态
+      // 是否处于拖拽状态
       isEdit: false,
       isEditTime: '',
-      //  计算移动距离相关
+      // 计算移动距离相关
       startPosition: 0,
       lastPosition: 0,
       lastMoveStart: 0,
       lastMoveTime: 0,
-      //  与数据对应的id
+      // 与数据对应的id
       selectId: 0,
-      //  与子项对应的id
-      selectOrderId: 0
+      // 与子项对应的id
+      selectOrderId: 0,
 
-      //  用于渲染子项的数据
-      //  propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
-      //  propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png',
-      //  'static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
+      // 用于渲染子项的数据
+      // propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
+      // propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png','static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
 
-      //  外部状态/数据定义，通过父组件配置options传入
-      //  options: {
-      //    isShow: true,
-      //    showNumOrImg: false,
-      //    //  这里设想了2种控制模式：
-      //    //  1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
-      //    //  2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
-      //    controlMode: 2,
-      //    //  水平显示or竖直显示
-      //    horizontal: false,
-
-      
-      //    //  还需配置的项：容器大小，元素大小（）
-      //  },
+      // 外部状态/数据定义，通过父组件配置options传入
+      // options: {
+      //   isShow: true,
+      //   showNumOrImg: false,
+      //   // 这里设想了2种控制模式：
+      //   // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
+      //   // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
+      //   controlMode: 2,
+      //   // 水平显示or竖直显示
+      //   horizontal: false,
+      //   // 还需配置的项：容器大小，元素大小（）
+      // },
     };
   },
   computed: {
-    //  为解决传入值数量可能过少的问题，通过传入值的数据来重新渲染一份用于循环渲染的数据
-    //  规则：2个3个时乘5,4个时乘3,5-9个时乘2,10个及以上不处理
+    // 为解决传入值数量可能过少的问题，通过传入值的数据来重新渲染一份用于循环渲染的数据
+    // 规则：2个3个时乘5,4个时乘3,5-9个时乘2,10个及以上不处理
     computedData() {
-      const tmpPropData = [];
-      this.propData.forEach((item, index) => {
-        const tmpItem = { id: index, content: item };
+      let tmpPropData = [];
+      for (let index in this.propData) {
+        let tmpItem = { id: index, content: this.propData[index] };
         tmpPropData.push(tmpItem);
-      });
-      //  for (let index in this.propData) {
-      //    let tmpItem = { id: index, content: this.propData[index] };
-      //    tmpPropData.push(tmpItem);
-      //  }
+      }
       console.log('所有子项的数据: ');
       console.log(tmpPropData);
 
       const len = tmpPropData.length;
-      const result = [];
+      let result = [];
       switch (len) {
         case 2:
         case 3:
-          for (let i = 0; i < 5; i += 1) {
+          for (let i = 0; i < 5; i++) {
             result.push(...tmpPropData);
           }
           return result;
+          break;
         case 4:
-          for (let i = 0; i < 3; i += 1) {
+          for (let i = 0; i < 3; i++) {
             result.push(...tmpPropData);
           }
           return result;
+          break;
         case 5:
         case 6:
         case 7:
         case 8:
         case 9:
-          for (let i = 0; i < 2; i += 1) {
+          for (let i = 0; i < 2; i++) {
             result.push(...tmpPropData);
           }
           return result;
+          break;
         default:
           result.push(...tmpPropData);
           return result;
+          break;
       }
     },
-    //  给所有子元素的动态绑定样式，用于隐藏显示
-    //  itemStyle() {
-    //    if (this.isEdit) {
-    //    } else {
-    //      return { visibility: 'hidden' };
-    //    }
-    //  },
+    // 给所有子元素的动态绑定样式，用于隐藏显示
+    itemStyle() {
+      if (this.isEdit) {
+      } else {
+        return { visibility: 'hidden' };
+      }
+    },
     showThreeId() {
-      const threeId = [];
+      let threeId = [];
       this.selectOrderId - 1 < 0
         ? threeId.push(this.computedData.length - 1)
         : threeId.push(this.selectOrderId - 1);
@@ -249,77 +220,75 @@ export default {
         ? threeId.push(0)
         : threeId.push(this.selectOrderId + 1);
       return threeId;
-    }
+    },
   },
   watch: {},
   mounted() {
     this.init_Mode();
-    //  panel.style['transform'] = `${this.rotateFn}(${angle}deg)
-    //  translateZ(${this.radius * 1.5}px)`;
-    //  let wrapper = this.$refs.wrapper;
-    //  wrapper.style['transform'] = `rotate(90deg)`
+    // panel.style['transform'] = `${this.rotateFn}(${angle}deg) translateZ(${this.radius * 1.5}px)`;
+    let wrapper = this.$refs.wrapper;
+    // wrapper.style['transform'] = `rotate(90deg)`
   },
   methods: {
     init_Mode() {
-      //  document.getElementById('itemsWrapper')
-      //  this.$el.querySelector("#itemsWrapper")
-      this.carousel = new Carousel(this.$el.querySelector('#itemsWrapper'));
+      // document.getElementById('itemsWrapper')
+      // this.$el.querySelector("#itemsWrapper")
+      this.carousel = new Carousel(this.$el.querySelector("#itemsWrapper"));
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.isHorizontal = this.options.horizontal;
       this.carousel.modify();
-      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
       const figures = itemsWrapper.getElementsByTagName('figure');
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.width = `${this.carousel.panelWith}px`;
       }
     },
 
-    _touchstart(event) {
-      //  状态监控：
+    touchstart(event) {
+      // 状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
-        event.preventDefault(); //  阻止浏览器默认事件，重要
+        event.preventDefault(); // 阻止浏览器默认事件，重要
         const touch = event.targetTouches[0];
-        //  this.lastMoveStart = this.startPosition =
-        this.lastPosition = this.options.horizontal ? touch.pageX : touch.pageY;
-        this.startPosition = this.lastPosition;
-        this.lastMoveStart = this.startPosition;
+        this.lastMoveStart = this.startPosition = this.lastPosition = this
+          .options.horizontal
+          ? touch.pageX
+          : touch.pageY;
         this.lastMoveTime = event.timeStamp || Date.now();
         this.initR_mode = this.carousel.rotation;
-        const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+        const itemsWrapper = this.$el.querySelector("#itemsWrapper");
         const figures = itemsWrapper.getElementsByTagName('figure');
         itemsWrapper.style.transition = 'transform 0s';
         for (let i = 0; i < figures.length; i += 1) {
           figures[i].style.transition = 'transform 0s';
         }
-        //         for (var i = 1; i <= 10; i++) {
-        //           var panel = $("#mode_" + i);
-        //           panel.stop();
-        //           panel.css("opacity", "1");
-        //           panel.show();
-        //         }
+        //        for (var i = 1; i <= 10; i++) {
+        //          var panel = $("#mode_" + i);
+        //          panel.stop();
+        //          panel.css("opacity", "1");
+        //          panel.show();
+        //        }
       }
     },
-    _touchmove(event) {
+    touchmove(event) {
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
-        //         const touch = event.targetTouches[0];
+        //        const touch = event.targetTouches[0];
         const nowX = this.options.horizontal
           ? event.touches[0].pageX
           : event.touches[0].pageY;
-        //         const dir = nowX - this.lastPosition > 0 ? 1 : -1;
+        //        const dir = nowX - this.lastPosition > 0 ? 1 : -1;
         this.lastPosition = nowX;
-        //  根据move移动距离移动数字
-        //  let  moveX = nowX - this.startPosition;
-        const moveX = this.options.horizontal
+        //根据move移动距离移动数字
+        // let  moveX = nowX - this.startPosition;
+        let moveX = this.options.horizontal
           ? nowX - this.startPosition
           : this.startPosition - nowX;
 
-        const valpresect =
-          moveX / this.carousel.panelWith * this.carousel.theta;
+        let valpresect = moveX / this.carousel.panelWith * this.carousel.theta;
         let ChangeRotate = valpresect;
-        ChangeRotate = parseInt(ChangeRotate, 10);
+        ChangeRotate = parseInt(ChangeRotate);
         if (this.carousel.rotation !== ChangeRotate) {
           this.carousel.rotation = this.initR_mode + ChangeRotate;
           this.carousel.transform();
@@ -334,51 +303,51 @@ export default {
         }
       }
     },
-    _touchend(event) {
+    touchend(event) {
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
-      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
       const figures = itemsWrapper.getElementsByTagName('figure');
       itemsWrapper.style.transition = 'transform 0.2s';
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.transition = 'transform 0.2s';
       }
       const moveX = this.lastPosition - this.lastMoveStart;
-      //  const checkMove = this.lastPosition - this.startPosition;
-      //  const checkDis = Math.abs(checkMove);
+      const checkMove = this.lastPosition - this.startPosition;
+      const checkDis = Math.abs(checkMove);
 
       /**
        * 缓动代码
        */
       const nowTime = event.timeStamp || Date.now();
-      const v = moveX / (nowTime - this.lastMoveTime); //  最后一段时间手指划动速度
-      const dir = v > 0 ? -1 : 1; //  加速度方向
+      const v = moveX / (nowTime - this.lastMoveTime); //最后一段时间手指划动速度
+      const dir = v > 0 ? -1 : 1; //加速度方向
       const deceleration = dir * 0.0006;
-      const duration = v / deceleration; //  速度消减至0所需时间
-      const dist = v * duration / 2; // 最终移动多少
-      let val = parseInt(dist / (moveX * 2), 10);
+      const duration = v / deceleration; // 速度消减至0所需时间
+      const dist = v * duration / 2; //最终移动多少
+      let val = parseInt(dist / (moveX * 2));
       if (val > 15 || val < -15) {
         val = -1 * 15 * dir;
       }
       if (isNaN(val)) val = 0;
-      // 根据方向补剩余移动量
+      //根据方向补剩余移动量
       let tmp =
         (this.carousel.theta + this.carousel.rotation % this.carousel.theta) %
         this.carousel.theta;
       if (dir === 1) {
-        // 手左滑
-        // 不够20%不移动
+        //手左滑
+        //不够20%不移动
         if (tmp * 100 / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation - tmp;
           this.carousel.rotation +=
             Math.abs(val) * dir * -1 * this.carousel.theta;
         } else {
-          // 复原
+          //复原
           this.carousel.rotation =
             this.carousel.rotation + (this.carousel.theta - Math.abs(tmp));
         }
       } else {
-        // 手右滑
+        //手右滑
         tmp = this.carousel.theta - Math.abs(tmp);
         if (tmp * 100 / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation + tmp;
@@ -391,9 +360,9 @@ export default {
       }
       this.carousel.transform();
 
-      //  状态监控：
+      // 状态监控：
       this.isEdit = false;
-      const selectIdTmp =
+      let selectIdTmp =
         Math.round(this.carousel.rotation / this.carousel.theta) %
         this.carousel.totalPanelCount;
       this.selectOrderId =
@@ -401,33 +370,33 @@ export default {
           ? -selectIdTmp
           : this.carousel.totalPanelCount - selectIdTmp;
       this.selectId = this.selectOrderId % this.propData.length;
-      //  向父组件传出事件：
+      // 向父组件传出事件：
       this.$emit('currentChange', this.selectId);
     },
     changeMode(e) {
-      if (this.options.controlMode === 2 && this.options.clickAble) {
+      if (this.options.controlMode === 2) {
         const changeTo = e.currentTarget.id;
-        const index = changeTo;
-        //  这里切换时是不过分界线的，如果添加动画效果要注意添加越过边界处理逻辑
+        let index = changeTo;
+        // 这里切换时是不过分界线的，如果添加动画效果要注意添加越过边界处理逻辑
         this.carousel.rotation = -index * this.carousel.theta;
-        //  e.style['transitionDuration'] = `.5s`
-        //  this.carousel.element.style = `transitionDuration: 2s`
+        // e.style['transitionDuration'] = `.5s`
+        // this.carousel.element.style = `transitionDuration: 2s`
         this.carousel.transform();
       }
     },
     setId(id) {
-      //  此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
-      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
-      // const figures = itemsWrapper.getElementsByTagName('figure');
+      // 此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
+      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const figures = itemsWrapper.getElementsByTagName('figure');
       itemsWrapper.style.transition = 'transform 0s';
 
-      // 滚动到对应角度
+      //滚动到对应角度
       this.selectId = id;
       this.selectOrderId = this.selectId;
-      this.carousel.rotation = -1 * this.carousel.theta * parseInt(id, 10);
+      this.carousel.rotation = -1 * this.carousel.theta * parseInt(id);
       this.carousel.transform();
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -435,10 +404,10 @@ export default {
 <style scoped>
 .hidden {
   visibility: hidden;
-  /* -webkit-transition: -webkit-transform 2s;
+  -webkit-transition: -webkit-transform 2s;
   -moz-transition: -moz-transform 2s;
   -o-transition: -o-transform 2s;
-  transition: transform 2s; */
+  transition: transform 2s;
   /* transform: .2s */
 }
 .showThreeItems {
