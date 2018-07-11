@@ -58,12 +58,14 @@ export default {
       carouselOptions: {
         // 是否显示
         isShow: true,
+        // 是否可控
+        controlAble: true,
         // 显示数字还是图片
         showNumOrImg: true,
         // 这里设想了2种控制模式：
         // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
         // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
-        controlMode: 2,
+        controlMode: 1,
         // 水平显示or竖直显示
         horizontal: true,
         // 显示3个or全部显示（有时会有只显示当前及左右两边的值(共三个)的需求，在组件内部实现了隐藏效果）
@@ -92,6 +94,7 @@ export default {
       ],
       carouselOptionsTwo: {
         isShow: true,
+        controlAble: true,
         showNumOrImg: false,
         controlMode: 2,
         horizontal: true,
@@ -112,9 +115,10 @@ export default {
       ],
       carouselOptionsThree: {
         isShow: true,
+        controlAble: true,
         showNumOrImg: false,
         controlMode: 2,
-        horizontal: false,
+        // horizontal: true,
         threeOrAll: true,
         width: '50%',
         marginLeft: '30%',

@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     ref="wrapper" 
     class="carousel-wrapper" 
     :style="{width:options.width,marginLeft:options.marginLeft}"
@@ -132,9 +132,10 @@ export default {
     },
     options: {
       type: Object,
-      default() {
+      default: function() {
         return {
           isShow: true,
+          controlAble: true,
           showNumOrImg: true,
           controlMode: 1,
           horizontal: true,
@@ -275,6 +276,8 @@ export default {
     },
 
     _touchstart(event) {
+      if(!this.options.controlAble)
+        return
       //  状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
@@ -302,6 +305,8 @@ export default {
       }
     },
     _touchmove(event) {
+      if(!this.options.controlAble)
+        return
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
         //         const touch = event.targetTouches[0];
@@ -335,6 +340,8 @@ export default {
       }
     },
     _touchend(event) {
+      if(!this.options.controlAble)
+        return
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
@@ -405,6 +412,8 @@ export default {
       this.$emit('currentChange', this.selectId);
     },
     changeMode(e) {
+      if(!this.options.controlAble)
+        return
       if (this.options.controlMode === 2 && this.options.clickAble) {
         const changeTo = e.currentTarget.id;
         const index = changeTo;

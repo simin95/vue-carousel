@@ -125,9 +125,8 @@ npm run build --report
 > 还缺少的部分：
 1. 子项有边界时的处理方式
 2. 一些合适的动画效果
-3. 未使用eslint格式化代码
-4. 因子项绝对定位于父容器，直接给carousel组件设置css布局属性并不会生效，使用给出的width和marginLeft调整布局位置
+3. 因子项绝对定位于父容器，直接给carousel组件设置css布局属性并不会生效，使用给出的width和marginLeft调整布局位置
 
 > 已知bug：
-1. 
+1. props的默认值设置无效？？
 
