@@ -76,7 +76,7 @@ export default {
         // 定位布局配置项：容器的水平位置绝对定位于窗口
         // 组件宽度及水平定位
         width: '50%',
-        marginLeft: '30%',
+        marginLeft: '25%',
         // 子项间距,值越小越密集
         spaceBetween: '3rem',
         // 子项容器高度 （似乎这两个值之间存在某种联系，需要一起按比例改变）
@@ -107,26 +107,21 @@ export default {
         height: '3.5rem',
         fontSize: '32px'
       },
-      carouselDataThree: [
-        'static/images/index_mode_auto.png',
-        'static/images/index_mode_cool.png',
-        'static/images/index_mode_dry.png',
-        'static/images/index_mode_fan.png',
-      ],
-      carouselOptionsThree: {
-        isShow: true,
-        controlAble: true,
-        showNumOrImg: false,
-        controlMode: 2,
-        // horizontal: true,
-        threeOrAll: true,
-        width: '50%',
-        marginLeft: '30%',
-        height: '3.5rem',
-        // 子项间距,值越小越密集
-        spaceBetween: '3rem',
-        fontSize: '32px'
-      },
+      carouselDataThree: [1, 2, 3, 4, 5, 6, 7],
+      // carouselOptionsThree: {
+      //   isShow: true,
+      //   controlAble: true,
+      //   showNumOrImg: false,
+      //   controlMode: 2,
+      //   // horizontal: true,
+      //   threeOrAll: true,
+      //   width: '50%',
+      //   marginLeft: '30%',
+      //   height: '3.5rem',
+      //   // 子项间距,值越小越密集
+      //   spaceBetween: '3rem',
+      //   fontSize: '32px'
+      // },
     };
   },
   methods: {

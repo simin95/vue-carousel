@@ -277,7 +277,7 @@ export default {
 
     _touchstart(event) {
       if(!this.options.controlAble)
-        return
+        return;
       //  状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
@@ -306,7 +306,7 @@ export default {
     },
     _touchmove(event) {
       if(!this.options.controlAble)
-        return
+        return;
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
         //         const touch = event.targetTouches[0];
@@ -341,7 +341,7 @@ export default {
     },
     _touchend(event) {
       if(!this.options.controlAble)
-        return
+        return;
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
@@ -413,7 +413,7 @@ export default {
     },
     changeMode(e) {
       if(!this.options.controlAble)
-        return
+        return;
       if (this.options.controlMode === 2 && this.options.clickAble) {
         const changeTo = e.currentTarget.id;
         const index = changeTo;
@@ -486,9 +486,9 @@ export default {
 }
 
 #itemsWrapper {
-  width: 100%;
-  height: 100%;
-  position: absolute;
+  position: relative;
+  text-align: center;
+  margin: 0 auto;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;
