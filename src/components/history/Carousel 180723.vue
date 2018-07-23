@@ -14,22 +14,19 @@
         ref="itemsWrapper" 
         id="itemsWrapper" 
         class="panels-backface-invisible"
-        :style="{width:options.spaceBetween,height:options.spaceBetween}">
+        :style="{width:options.spaceBetween,height:options.spaceBetween}"
+        >
         <figure
           v-for="(item,index) in computedData"
           :key="index"
-
-          @touchstart="changeMode"
-          style="margin: 0 auto">
-          <div 
-          class="content-wrapper"
           :class="{hidden:selectId!=item.id && !isEdit 
                      && options.controlMode == 1,
                    showThreeItems:index!=showThreeId[0]
                      &&index!=showThreeId[1]
                      &&index!=showThreeId[2]&&!isEdit
-          &&options.threeOrAll==1}"          
-          >
+          &&options.threeOrAll==1}"
+          @touchstart="changeMode"
+          style="margin: 0 auto">
           <div 
             v-if="options.isShow && options.showNumOrImg" 
             :style="{height:options.height,fontSize:options.fontSize}">{{ item.content }}</div>
@@ -37,8 +34,6 @@
             v-if="options.isShow && !options.showNumOrImg" 
             :src="item.content" 
             :style="{height:options.height}">
-          </div>
-
         </figure>
 
       </div>
@@ -84,7 +79,7 @@ Carousel.prototype.modify = function modify() {
   //  do some trig to figure out how big the carousel
   //  is in 3D space
   this.radius = Math.round(
-    this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount),
+    this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount)
   );
 
   for (let i = 0; i < this.totalPanelCount; i += 1) {
@@ -133,11 +128,11 @@ export default {
       type: Array,
       default() {
         return [111, 2, 3, 4, 5, 6, 7, 8, 999];
-      },
+      }
     },
     options: {
       type: Object,
-      default: function defaultInit() {
+      default: function() {
         return {
           isShow: true,
           controlAble: true,
@@ -150,10 +145,10 @@ export default {
           marginLeft: '30%',
           height: '3.5rem',
           fontSize: '32px',
-          spaceBetween: '1rem',
+          spaceBetween: '1rem'
         };
-      },
-    },
+      }
+    }
   },
   data() {
     return {
@@ -171,7 +166,7 @@ export default {
       //  与数据对应的id
       selectId: 0,
       //  与子项对应的id
-      selectOrderId: 0,
+      selectOrderId: 0
 
       //  用于渲染子项的数据
       //  propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
@@ -189,6 +184,7 @@ export default {
       //    //  水平显示or竖直显示
       //    horizontal: false,
 
+      
       //    //  还需配置的项：容器大小，元素大小（）
       //  },
     };
@@ -206,8 +202,8 @@ export default {
       //    let tmpItem = { id: index, content: this.propData[index] };
       //    tmpPropData.push(tmpItem);
       //  }
-      // console.log('所有子项的数据: ');
-      // console.log(tmpPropData);
+      console.log('所有子项的数据: ');
+      console.log(tmpPropData);
 
       const len = tmpPropData.length;
       const result = [];
@@ -254,7 +250,7 @@ export default {
         ? threeId.push(0)
         : threeId.push(this.selectOrderId + 1);
       return threeId;
-    },
+    }
   },
   watch: {},
   mounted() {
@@ -280,7 +276,8 @@ export default {
     },
 
     _touchstart(event) {
-      if (!this.options.controlAble) return;
+      if(!this.options.controlAble)
+        return;
       //  状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
@@ -308,7 +305,8 @@ export default {
       }
     },
     _touchmove(event) {
-      if (!this.options.controlAble) return;
+      if(!this.options.controlAble)
+        return;
       this.isEditTime = event.timeStamp || Date.now();
       if (event.targetTouches.length === 1) {
         //         const touch = event.targetTouches[0];
@@ -342,7 +340,8 @@ export default {
       }
     },
     _touchend(event) {
-      if (!this.options.controlAble) return;
+      if(!this.options.controlAble)
+        return;
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
@@ -413,7 +412,8 @@ export default {
       this.$emit('currentChange', this.selectId);
     },
     changeMode(e) {
-      if (!this.options.controlAble) return;
+      if(!this.options.controlAble)
+        return;
       if (this.options.controlMode === 2 && this.options.clickAble) {
         const changeTo = e.currentTarget.id;
         const index = changeTo;
@@ -435,26 +435,23 @@ export default {
       this.selectOrderId = this.selectId;
       this.carousel.rotation = -1 * this.carousel.theta * parseInt(id, 10);
       this.carousel.transform();
-    },
-  },
+    }
+  }
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/* 在此处设置渐显动画 */
-.content-wrapper {
-  opacity: 1;
-  transition: opacity .2s;
-}
-/* 在此处设置渐隐动画 */
 .hidden {
-  opacity: 0;
-  transition: opacity .8s;
+  visibility: hidden;
+  /* -webkit-transition: -webkit-transform 2s;
+  -moz-transition: -moz-transform 2s;
+  -o-transition: -o-transform 2s;
+  transition: transform 2s; */
+  /* transform: .2s */
 }
 .showThreeItems {
-  opacity: 0;
-  transition: opacity .8s;
+  visibility: hidden;
 }
 
 .carousel-wrapper {
@@ -463,9 +460,7 @@ export default {
   text-align: center;
   /* 在此可配置水平定位 */
   width: 30%;
-  /* margin-left: 10px; */
-  display: flex;
-  justify-content: center;
+  margin-left: 10px;
 }
 .carousel-wrapper:after {
   position: absolute;
@@ -481,10 +476,9 @@ export default {
   width: 30%;
   height: 3.5rem;
   /* padding: 50%; */
+
   position: relative;
-  /* margin: 0rem auto; */
-  display: flex;
-  justify-content: center;
+  margin: 0rem auto;
   -webkit-perspective: 1100px;
   -moz-perspective: 1100px;
   -o-perspective: 1100px;
@@ -495,8 +489,6 @@ export default {
   position: relative;
   text-align: center;
   margin: 0 auto;
-  display: flex;
-  justify-content: center;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;

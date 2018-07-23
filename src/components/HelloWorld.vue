@@ -48,20 +48,20 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       // 将data和options分开传入的原因是：在组件使用过程中，样式一般不变，数据可能会变
-      carouselData: [1, 2, 3, 4, 5, 6, 7],
-      // carouselData: [
-      //   'static/images/index_mode_auto.png',
-      //   'static/images/index_mode_cool.png',
-      //   'static/images/index_mode_dry.png',
-      //   'static/images/index_mode_fan.png',
-      // ],
+      // carouselData: [1, 2, 3, 4, 5, 6, 7],
+      carouselData: [
+        'static/images/index_mode_auto.png',
+        'static/images/index_mode_cool.png',
+        'static/images/index_mode_dry.png',
+        'static/images/index_mode_fan.png',
+      ],
       carouselOptions: {
         // 是否显示
         isShow: true,
         // 是否可控
         controlAble: true,
         // 显示数字还是图片
-        showNumOrImg: true,
+        showNumOrImg: false,
         // 这里设想了2种控制模式：
         // 1.滑动选择控制，是之前使用的方案，只显示当前的选中元素，滑动时出现左右元素
         // 2.滑动+点选控制，以后可能会有这样的需求，显示当前及左右两侧的多个元素，可滑动调节也可点击直接跳至点击元素
