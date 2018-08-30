@@ -54,6 +54,9 @@ data() {
         // 是否显示
         isShow: true,
 
+        // 是否可控
+        controlAble: true,
+
         // 显示数字还是图片，数字为true，图片为false
         showNumOrImg: true,
 

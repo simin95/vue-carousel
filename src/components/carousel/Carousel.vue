@@ -21,22 +21,22 @@
 
           @touchstart="changeMode"
           style="margin: 0 auto">
-          <div 
-          class="content-wrapper"
-          :class="{hidden:selectId!=item.id && !isEdit 
-                     && options.controlMode == 1,
-                   showThreeItems:index!=showThreeId[0]
-                     &&index!=showThreeId[1]
-                     &&index!=showThreeId[2]&&!isEdit
-          &&options.threeOrAll==1}"          
+          <div
+            class="content-wrapper"
+            :class="{hidden:selectId!=item.id && !isEdit 
+                       && options.controlMode == 1,
+                     showThreeItems:index!=showThreeId[0]
+                       &&index!=showThreeId[1]
+                       &&index!=showThreeId[2]&&!isEdit
+            &&options.threeOrAll==1}"          
           >
-          <div 
-            v-if="options.isShow && options.showNumOrImg" 
-            :style="{height:options.height,fontSize:options.fontSize}">{{ item.content }}</div>
-          <img 
-            v-if="options.isShow && !options.showNumOrImg" 
-            :src="item.content" 
-            :style="{height:options.height}">
+            <div 
+              v-if="options.isShow && options.showNumOrImg" 
+              :style="{height:options.height,fontSize:options.fontSize}">{{ item.content }}</div>
+            <img 
+              v-if="options.isShow && !options.showNumOrImg" 
+              :src="item.content" 
+              :style="{height:options.height}">
           </div>
 
         </figure>
@@ -430,11 +430,17 @@ export default {
       // const figures = itemsWrapper.getElementsByTagName('figure');
       itemsWrapper.style.transition = 'transform 0s';
 
+      // this.$refs["contentWrapper"].style.transition = 'opacity .2s';
+      const contentWrapper = this.$el.querySelectorAll('.content-wrapper');
+      contentWrapper[this.selectId].style.transition = 'opacity 0s';
+
       // 滚动到对应角度
       this.selectId = id;
       this.selectOrderId = this.selectId;
       this.carousel.rotation = -1 * this.carousel.theta * parseInt(id, 10);
       this.carousel.transform();
+
+      contentWrapper[this.selectId].style.transition = 'opacity 0.5s';
     },
   },
 };
@@ -445,16 +451,16 @@ export default {
 /* 在此处设置渐显动画 */
 .content-wrapper {
   opacity: 1;
-  transition: opacity .2s;
+  transition: opacity .5s;
 }
 /* 在此处设置渐隐动画 */
 .hidden {
   opacity: 0;
-  transition: opacity .8s;
+  transition: opacity .5s;
 }
 .showThreeItems {
   opacity: 0;
-  transition: opacity .8s;
+  transition: opacity .5s;
 }
 
 .carousel-wrapper {
