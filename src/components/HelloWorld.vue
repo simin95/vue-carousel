@@ -1,5 +1,8 @@
 <template>
   <div class="hello">
+          <button @click="handlePlus">+++++</button>
+      <button @click="handleSub">-----</button>
+      <button @click="redraw">重绘</button>
     <button @click="getCarouselId('carousel1')">get方法</button>
     <button @click="setCarouselId('carousel1',0)">set方法：id===0</button>
     
@@ -33,7 +36,9 @@
     ></carousel>
     </div>
 
-    <div class="test"></div>
+    <div class="test">
+
+    </div>
   </div>
 </template>
 
@@ -82,8 +87,8 @@ export default {
         // 子项容器高度 （似乎这两个值之间存在某种联系，需要一起按比例改变）
         height: '3.5rem',
         // 字体大小
-        fontSize: '32px'
-        
+        fontSize: '32px',
+
         // 文字颜色及背景颜色在css中设置即可
       },
       carouselDataTwo: [
@@ -96,7 +101,7 @@ export default {
         isShow: true,
         controlAble: true,
         showNumOrImg: false,
-        controlMode: 2,
+        controlMode: 1,
         horizontal: true,
         threeOrAll: false,
         clickAble: false,
@@ -105,26 +110,37 @@ export default {
         // 子项间距,值越小越密集
         spaceBetween: '5rem',
         height: '3.5rem',
-        fontSize: '32px'
+        fontSize: '32px',
       },
-      carouselDataThree: [1, 2, 3, 4, 5, 6, 7],
-      // carouselOptionsThree: {
-      //   isShow: true,
-      //   controlAble: true,
-      //   showNumOrImg: false,
-      //   controlMode: 2,
-      //   // horizontal: true,
-      //   threeOrAll: true,
-      //   width: '50%',
-      //   marginLeft: '30%',
-      //   height: '3.5rem',
-      //   // 子项间距,值越小越密集
-      //   spaceBetween: '3rem',
-      //   fontSize: '32px'
-      // },
+      carouselDataThree: [1, 2, 3],
+      carouselOptionsThree: {
+        isShow: true,
+        controlAble: true,
+        showNumOrImg: true,
+        controlMode: 1,
+        horizontal: true,
+        threeOrAll: true,
+        width: '50%',
+        marginLeft: '30%',
+        height: '3.5rem',
+        // 子项间距,值越小越密集
+        spaceBetween: '3rem',
+        fontSize: '32px',
+      },
     };
   },
   methods: {
+    // test: 动态修改传入的值
+    redraw() {
+      this.$refs['carousel3'].redraw()
+    },
+    handlePlus() {
+      let len = this.carouselDataThree.length;
+      this.carouselDataThree.push(this.carouselDataThree[len - 1] + 1);
+    },
+    handleSub() {
+      this.carouselDataThree.pop();
+    },
     // 手动操作滑动组件改变选择到的id值后会触发此事件
     handleChange: function(args) {
       console.log('当前选择到的id：' + args);
@@ -145,21 +161,25 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.content-wrapper {
+  background: red;
+}
+
 .carousel-wrapper {
   color: #fff;
   background-color: #42b983;
   /* transform: rotate(90deg) */
-  
+
   /* 水平方向可设置容器的属性使得只显示3个 */
   /* overflow: hidden; */
 }
-.content1{
-  margin-top: 1rem
+.content1 {
+  margin-top: 1rem;
 }
-.content2{
-  margin-top: 8rem
+.content2 {
+  margin-top: 8rem;
 }
-.content3{
+.content3 {
   margin-top: 20rem;
   background-color: rgb(204, 204, 204);
 }

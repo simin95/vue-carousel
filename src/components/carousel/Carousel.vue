@@ -197,6 +197,7 @@ export default {
     //  为解决传入值数量可能过少的问题，通过传入值的数据来重新渲染一份用于循环渲染的数据
     //  规则：2个3个时乘5,4个时乘3,5-9个时乘2,10个及以上不处理
     computedData() {
+      console.log('感知到了变化-----');
       const tmpPropData = [];
       this.propData.forEach((item, index) => {
         const tmpItem = { id: index, content: item };
@@ -217,11 +218,13 @@ export default {
           for (let i = 0; i < 5; i += 1) {
             result.push(...tmpPropData);
           }
+          console.log(result);
           return result;
         case 4:
           for (let i = 0; i < 3; i += 1) {
             result.push(...tmpPropData);
           }
+          console.log(result);
           return result;
         case 5:
         case 6:
@@ -231,9 +234,11 @@ export default {
           for (let i = 0; i < 2; i += 1) {
             result.push(...tmpPropData);
           }
+          console.log(result);
           return result;
         default:
           result.push(...tmpPropData);
+          console.log(result);
           return result;
       }
     },
@@ -256,15 +261,57 @@ export default {
       return threeId;
     },
   },
-  watch: {},
+  watch: {
+    computedData: function() {
+      this.$nextTick(() => {
+        this.redraw();
+      });
+    },
+  },
   mounted() {
     this.init_Mode();
-    //  panel.style['transform'] = `${this.rotateFn}(${angle}deg)
-    //  translateZ(${this.radius * 1.5}px)`;
-    //  let wrapper = this.$refs.wrapper;
-    //  wrapper.style['transform'] = `rotate(90deg)`
   },
   methods: {
+    // 重绘函数，用于动态传入数据时使用，根据当前的 computedData 重新计算并绘制
+    redraw() {
+      let tempSelectId = this.selectId;
+
+      // 先保留当前选中的id，若新传入的值比现在多，则仍使用当前值，若
+      console.log('redraw');
+      console.log(this);
+      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      this.carousel.totalPanelCount = this.computedData.length;
+      this.carousel.modify();
+      const figures = itemsWrapper.getElementsByTagName('figure');
+      for (let i = 0; i < figures.length; i += 1) {
+        figures[i].style.width = `${this.carousel.panelWith}px`;
+      }
+
+      //  此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
+      // const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      // const figures = itemsWrapper.getElementsByTagName('figure');
+
+      // 这一段代码用来给结束动作添加动画，但在调用重绘函数时，是不必要的
+      itemsWrapper.style.transition = 'transform 0s';
+      for (let i = 0; i < figures.length; i += 1) {
+        figures[i].style.transition = 'transform 0s';
+      }
+
+      // this.$refs["contentWrapper"].style.transition = 'opacity .2s';
+      const contentWrapper = this.$el.querySelectorAll('.content-wrapper');
+      contentWrapper[this.selectId].style.transition = 'opacity 0s';
+
+      console.log('--------------------')
+      let exceed = (this.propData.length-1 - tempSelectId < 0)?true:false;
+      console.log(exceed)
+      // 滚动到对应角度，
+      this.selectId = (exceed)?this.propData.length-1:tempSelectId;
+      this.selectOrderId = this.selectId;
+      this.carousel.rotation =
+        -1 * this.carousel.theta * parseInt(this.selectId, 10);
+      this.carousel.transform();
+    },
+    // 初始化函数
     init_Mode() {
       //  document.getElementById('itemsWrapper')
       //  this.$el.querySelector("#itemsWrapper")
@@ -299,12 +346,6 @@ export default {
         for (let i = 0; i < figures.length; i += 1) {
           figures[i].style.transition = 'transform 0s';
         }
-        //         for (var i = 1; i <= 10; i++) {
-        //           var panel = $("#mode_" + i);
-        //           panel.stop();
-        //           panel.css("opacity", "1");
-        //           panel.show();
-        //         }
       }
     },
     _touchmove(event) {
@@ -324,7 +365,7 @@ export default {
           : this.startPosition - nowX;
 
         const valpresect =
-          moveX / this.carousel.panelWith * this.carousel.theta;
+          (moveX / this.carousel.panelWith) * this.carousel.theta;
         let ChangeRotate = valpresect;
         ChangeRotate = parseInt(ChangeRotate, 10);
         if (this.carousel.rotation !== ChangeRotate) {
@@ -347,10 +388,12 @@ export default {
       this.isEditTime = event.timeStamp || Date.now();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       const figures = itemsWrapper.getElementsByTagName('figure');
+      // 这一段代码用来给结束动作添加动画，但在调用重绘函数时，是不必要的
       itemsWrapper.style.transition = 'transform 0.2s';
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.transition = 'transform 0.2s';
       }
+
       const moveX = this.lastPosition - this.lastMoveStart;
       //  const checkMove = this.lastPosition - this.startPosition;
       //  const checkDis = Math.abs(checkMove);
@@ -363,7 +406,7 @@ export default {
       const dir = v > 0 ? -1 : 1; //  加速度方向
       const deceleration = dir * 0.0006;
       const duration = v / deceleration; //  速度消减至0所需时间
-      const dist = v * duration / 2; // 最终移动多少
+      const dist = (v * duration) / 2; // 最终移动多少
       let val = parseInt(dist / (moveX * 2), 10);
       if (val > 15 || val < -15) {
         val = -1 * 15 * dir;
@@ -371,12 +414,12 @@ export default {
       if (isNaN(val)) val = 0;
       // 根据方向补剩余移动量
       let tmp =
-        (this.carousel.theta + this.carousel.rotation % this.carousel.theta) %
+        (this.carousel.theta + (this.carousel.rotation % this.carousel.theta)) %
         this.carousel.theta;
       if (dir === 1) {
         // 手左滑
         // 不够20%不移动
-        if (tmp * 100 / this.carousel.theta < 80) {
+        if ((tmp * 100) / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation - tmp;
           this.carousel.rotation +=
             Math.abs(val) * dir * -1 * this.carousel.theta;
@@ -388,7 +431,7 @@ export default {
       } else {
         // 手右滑
         tmp = this.carousel.theta - Math.abs(tmp);
-        if (tmp * 100 / this.carousel.theta < 80) {
+        if ((tmp * 100) / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation + tmp;
           this.carousel.rotation +=
             Math.abs(val) * dir * -1 * this.carousel.theta;
@@ -451,16 +494,17 @@ export default {
 /* 在此处设置渐显动画 */
 .content-wrapper {
   opacity: 1;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
+  /* background: red; */
 }
 /* 在此处设置渐隐动画 */
 .hidden {
   opacity: 0;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 .showThreeItems {
   opacity: 0;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
 }
 
 .carousel-wrapper {
