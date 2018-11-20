@@ -88,8 +88,8 @@ export default {
         height: '3.5rem',
         // 字体大小
         fontSize: '32px',
-
-        // 文字颜色及背景颜色在css中设置即可
+        // 半径倍数：用于指定滚轮半径大小相对于标准大小的倍数，用于调整子项宽度
+        radiusMutiply: 1.5,
       },
       carouselDataTwo: [
         'static/images/index_mode_auto.png',
@@ -111,21 +111,25 @@ export default {
         spaceBetween: '5rem',
         height: '3.5rem',
         fontSize: '32px',
+        // 半径倍数：用于指定滚轮半径大小相对于标准大小的倍数，用于调整子项宽度
+        radiusMutiply: 1.5,
       },
       carouselDataThree: [1, 2, 3],
       carouselOptionsThree: {
         isShow: true,
         controlAble: true,
         showNumOrImg: true,
-        controlMode: 1,
+        controlMode: 2,
         horizontal: true,
-        threeOrAll: true,
+        threeOrAll: false,
         width: '50%',
         marginLeft: '30%',
         height: '3.5rem',
         // 子项间距,值越小越密集
-        spaceBetween: '3rem',
-        fontSize: '32px',
+        spaceBetween: '18rem',
+        fontSize: '6rem',
+        // 半径倍数：用于指定滚轮半径大小相对于标准大小的倍数，用于调整子项宽度
+        radiusMutiply: 1.5,
       },
     };
   },

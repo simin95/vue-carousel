@@ -83,9 +83,10 @@ Carousel.prototype.modify = function modify() {
 
   //  do some trig to figure out how big the carousel
   //  is in 3D space
+  // 这里计算半径（决定滚轮整体的大小，子项间距）
   this.radius = Math.round(
     this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount),
-  );
+  ) * this.radiusMutiply;
 
   for (let i = 0; i < this.totalPanelCount; i += 1) {
     panel = this.element.children[i];
@@ -151,6 +152,7 @@ export default {
           height: '3.5rem',
           fontSize: '32px',
           spaceBetween: '1rem',
+          radiusMutiply: 1,
         };
       },
     },
@@ -316,8 +318,10 @@ export default {
       //  document.getElementById('itemsWrapper')
       //  this.$el.querySelector("#itemsWrapper")
       this.carousel = new Carousel(this.$el.querySelector('#itemsWrapper'));
+      // 把对组件的配置项传入滚轮实例
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.isHorizontal = this.options.horizontal;
+      this.carousel.radiusMutiply = this.options.radiusMutiply;
       this.carousel.modify();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       const figures = itemsWrapper.getElementsByTagName('figure');
