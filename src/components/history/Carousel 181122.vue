@@ -264,7 +264,7 @@ export default {
     },
   },
   watch: {
-    computedData: function computedData() {
+    computedData: function() {
       this.$nextTick(() => {
         this.redraw();
       });
@@ -276,11 +276,11 @@ export default {
   methods: {
     // 重绘函数，用于动态传入数据时使用，根据当前的 computedData 重新计算并绘制
     redraw() {
-      const tempSelectId = this.selectId;
+      let tempSelectId = this.selectId;
 
       // 先保留当前选中的id，若新传入的值比现在多，则仍使用当前值，若
-      // console.log('redraw');
-      // console.log(this);
+      console.log('redraw');
+      console.log(this);
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.modify();
@@ -303,11 +303,11 @@ export default {
       const contentWrapper = this.$el.querySelectorAll('.content-wrapper');
       contentWrapper[this.selectId].style.transition = 'opacity 0s';
 
-      console.log('--------------------');
-      const exceed = (this.propData.length - 1 - tempSelectId < 0);
-      // console.log(exceed)
+      console.log('--------------------')
+      let exceed = (this.propData.length-1 - tempSelectId < 0)?true:false;
+      console.log(exceed)
       // 滚动到对应角度，
-      this.selectId = (exceed) ? this.propData.length - 1 : tempSelectId;
+      this.selectId = (exceed)?this.propData.length-1:tempSelectId;
       this.selectOrderId = this.selectId;
       this.carousel.rotation =
         -1 * this.carousel.theta * parseInt(this.selectId, 10);
@@ -321,7 +321,7 @@ export default {
       // 把对组件的配置项传入滚轮实例
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.isHorizontal = this.options.horizontal;
-      this.carousel.radiusMutiply = this.options.radiusMutiply || 1;
+      this.carousel.radiusMutiply = this.options.radiusMutiply;
       this.carousel.modify();
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       const figures = itemsWrapper.getElementsByTagName('figure');
@@ -512,7 +512,7 @@ export default {
 }
 
 .carousel-wrapper {
-  /* position: absolute; */
+  position: absolute;
   display: block;
   text-align: center;
   /* 在此可配置水平定位 */
@@ -549,9 +549,8 @@ export default {
   position: relative;
   text-align: center;
   margin: 0 auto;
-  /* 目前有兼容格力二代的需求，把这个屏蔽了 */
-  /* display: flex;
-  justify-content: center; */
+  display: flex;
+  justify-content: center;
   -webkit-transform-style: preserve-3d;
   -moz-transform-style: preserve-3d;
   -o-transform-style: preserve-3d;
