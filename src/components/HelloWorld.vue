@@ -26,7 +26,7 @@
     ></carousel>
     </div>
 
-    <div class="content3">
+    <!-- <div class="content3">
     <carousel
       ref="carousel3"
       class="carousel-wrapper"
@@ -34,7 +34,7 @@
       :propData="carouselDataThree"
       :options="carouselOptionsThree"
     ></carousel>
-    </div>
+    </div> -->
 
     <div class="test">
 
@@ -120,7 +120,7 @@ export default {
         controlAble: true,
         showNumOrImg: true,
         controlMode: 2,
-        horizontal: true,
+        horizontal: false,
         threeOrAll: false,
         width: '50%',
         marginLeft: '30%',
@@ -184,7 +184,7 @@ export default {
   margin-top: 8rem;
 }
 .content3 {
-  margin-top: 20rem;
+  margin-top: 10rem;
   background-color: rgb(204, 204, 204);
 }
 html {
