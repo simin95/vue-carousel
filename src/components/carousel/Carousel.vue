@@ -50,6 +50,8 @@
 //  //  常量定义
 //  const SLIPMODE = 1;
 //  const CLICKMODE = 2;
+// setId 方法节流 的延时设置
+const SETID_DELAY = 200
 
 //  横滚控件
 //  eslint-disable-next-line
@@ -127,6 +129,28 @@ Carousel.prototype.transform = function transform() {
   //     this.rotation +
   //     'deg)';
 };
+
+// 自带节流函数：使用 Data() 实现
+// fn为需要包装的函数，cycle为时间间隔，单位毫秒
+function throttle(fn, cycle) {
+  console.log(fn)
+  let start = +Date.now()
+  let now
+  let timer
+  return function() {
+    now = +Date.now()
+    clearTimeout(timer)
+    if(now - start >= cycle) {
+      fn.apply(this, arguments)
+      start = now
+    } else {
+      timer = setTimeout(() => {
+        fn.apply(this, arguments)
+      }, cycle)
+    }
+  }
+}
+
 export default {
   name: 'Carousel',
   props: {
@@ -159,6 +183,8 @@ export default {
   },
   data() {
     return {
+      // 用于给 setId 方法 设置节流的 包装后方法存储位置
+      throttleSetId: undefined,
       //  以下为内部属性
       //  实例出的carousel对象
       carousel: '',
@@ -269,6 +295,9 @@ export default {
         this.redraw();
       });
     },
+  },
+  created() {
+    this.throttleSetId = throttle(this._setId, SETID_DELAY)
   },
   mounted() {
     this.init_Mode();
@@ -471,7 +500,14 @@ export default {
         this.carousel.transform();
       }
     },
+    // 设置组件显示位置 方法
     setId(id) {
+      this.throttleSetId(id)
+    },
+    _setId(id) {
+      // 性能优化：由于动画操作消耗性能，加入无需进行改变的判断条件 和 函数节流 机制
+      if(this.selectId === id) return;
+      console.log('确实执行了改变')
       //  此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
       const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       // const figures = itemsWrapper.getElementsByTagName('figure');
@@ -488,7 +524,7 @@ export default {
       this.carousel.transform();
 
       contentWrapper[this.selectId].style.transition = 'opacity 0.5s';
-    },
+    }
   },
 };
 </script>
