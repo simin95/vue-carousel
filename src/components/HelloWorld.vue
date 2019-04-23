@@ -26,7 +26,7 @@
     ></carousel>
     </div>
 
-    <!-- <div class="content3">
+    <div class="content3">
     <carousel
       ref="carousel3"
       class="carousel-wrapper"
@@ -34,7 +34,7 @@
       :propData="carouselDataThree"
       :options="carouselOptionsThree"
     ></carousel>
-    </div> -->
+    </div>
 
     <div class="test">
 
@@ -126,8 +126,8 @@ export default {
         marginLeft: '30%',
         height: '3.5rem',
         // 子项间距,值越小越密集
-        spaceBetween: '18rem',
-        fontSize: '6rem',
+        spaceBetween: '2rem',
+        fontSize: '32px',
         // 半径倍数：用于指定滚轮半径大小相对于标准大小的倍数，用于调整子项宽度
         radiusMutiply: 1.5,
       },

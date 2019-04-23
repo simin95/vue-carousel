@@ -1,53 +1,46 @@
 <template>
   <div
-    ref="wrapper"
-    class="carousel-wrapper"
+    ref="wrapper" 
+    class="carousel-wrapper" 
     :style="{width:options.width,marginLeft:options.marginLeft}"
     @touchstart="_touchstart"
     @touchmove="_touchmove"
-    @touchend="_touchend"
-    @touchcancel="_touchend"
-  >
-    <section
-      v-if="options.isShow"
-      class="container_mode"
-      :style="{height:options.height}"
-    >
-      <div
-        ref="itemsWrapper"
-        id="itemsWrapper"
+    @touchend="_touchend">
+    <section 
+      v-if="options.isShow" 
+      class="container_mode" 
+      :style="{height:options.height}">
+      <div 
+        ref="itemsWrapper" 
+        id="itemsWrapper" 
         class="panels-backface-invisible"
-        :style="{width:options.spaceBetween,height:options.spaceBetween}"
-      >
+        :style="{width:options.spaceBetween,height:options.spaceBetween}">
         <figure
           v-for="(item,index) in computedData"
           :key="index"
+
           @touchstart="changeMode"
-          style="margin: 0 auto"
-        >
+          style="margin: 0 auto">
           <div
-            ref="contentWrapper"
-            :class="{
-                      hidden:selectId!=item.id && !isEdit 
-                       && options.controlMode == 1, 
-                       show:!(selectId!=item.id && !isEdit 
-                       && options.controlMode == 1),
+            class="content-wrapper"
+            :class="{hidden:selectId!=item.id && !isEdit 
+                       && options.controlMode == 1,
                      showThreeItems:index!=showThreeId[0]
                        &&index!=showThreeId[1]
                        &&index!=showThreeId[2]&&!isEdit
-            &&options.threeOrAll==1}"
+            &&options.threeOrAll==1}"          
           >
-            <div
-              v-if="options.isShow && options.showNumOrImg"
-              :style="{height:options.height,fontSize:options.fontSize}"
-            >{{ item.content }}</div>
-            <img
-              v-if="options.isShow && !options.showNumOrImg"
-              :src="item.content"
-              :style="{height:options.height}"
-            >
+            <div 
+              v-if="options.isShow && options.showNumOrImg" 
+              :style="{height:options.height,fontSize:options.fontSize}">{{ item.content }}</div>
+            <img 
+              v-if="options.isShow && !options.showNumOrImg" 
+              :src="item.content" 
+              :style="{height:options.height}">
           </div>
+
         </figure>
+
       </div>
     </section>
   </div>
@@ -58,7 +51,8 @@
 //  const SLIPMODE = 1;
 //  const CLICKMODE = 2;
 // setId 方法节流 的延时设置
-const SETID_DELAY = 100;
+const SETID_DELAY = 200
+
 //  横滚控件
 //  eslint-disable-next-line
 //  /* eslint-disable */
@@ -74,23 +68,28 @@ function Carousel(el) {
   //  true为水平，false为竖直
   this.isHorizontal = false;
 }
+
 Carousel.prototype.modify = function modify() {
   let panel;
   let angle;
   // let i;
+
   this.panelSize = this.element[
-    this.isHorizontal ? "offsetWidth" : "offsetHeight"
+    this.isHorizontal ? 'offsetWidth' : 'offsetHeight'
   ];
   this.panelWith = this.panelSize;
-  this.rotateFn = this.isHorizontal ? "rotateY" : "rotateX";
+  this.rotateFn = this.isHorizontal ? 'rotateY' : 'rotateX';
   //  this.rotateFn = 'rotateY';
+
   this.theta = 360 / this.totalPanelCount;
+
   //  do some trig to figure out how big the carousel
   //  is in 3D space
   // 这里计算半径（决定滚轮整体的大小，子项间距）
-  this.radius =
-    Math.round(this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount)) *
-    this.radiusMutiply;
+  this.radius = Math.round(
+    this.panelSize / 2 / Math.tan(Math.PI / this.totalPanelCount),
+  ) * this.radiusMutiply;
+
   for (let i = 0; i < this.totalPanelCount; i += 1) {
     panel = this.element.children[i];
     angle = this.theta * i;
@@ -103,20 +102,24 @@ Carousel.prototype.modify = function modify() {
     //     this.rotateFn + '(' + angle + 'deg) translateZ(' + this.radius + 'px)';
     panel.id = i;
   }
+
   //  hide other panels
   //  for (i=0 ; i < this.totalPanelCount; i++ ) {
   //      panel = this.element.children[i];
   //      panel.style.opacity = 0;
   //      panel.style[ transformProp ] = 'none';
   //  }
+
   //  adjust rotation so panels are always flat
   this.rotation = Math.round(this.rotation / this.theta) * this.theta;
+
   this.transform();
 };
+
 Carousel.prototype.transform = function transform() {
   this.element.style.transform = `translateZ(-${this.radius * 1.5}px) ${
     this.rotateFn
-    }(${this.rotation}deg)`;
+  }(${this.rotation}deg)`;
   //  this.element.style['transition'] = `transform .8s`
   //     'translateZ(-' +
   //     this.radius +
@@ -126,34 +129,36 @@ Carousel.prototype.transform = function transform() {
   //     this.rotation +
   //     'deg)';
 };
+
 // 自带节流函数：使用 Data() 实现
 // fn为需要包装的函数，cycle为时间间隔，单位毫秒
 function throttle(fn, cycle) {
-  console.log(fn);
-  let start = +Date.now();
-  let now;
-  let timer;
-  return function () {
-    now = +Date.now();
-    clearTimeout(timer);
-    if (now - start >= cycle) {
-      fn.apply(this, arguments);
-      start = now;
+  console.log(fn)
+  let start = +Date.now()
+  let now
+  let timer
+  return function() {
+    now = +Date.now()
+    clearTimeout(timer)
+    if(now - start >= cycle) {
+      fn.apply(this, arguments)
+      start = now
     } else {
       timer = setTimeout(() => {
-        fn.apply(this, arguments);
-      }, cycle);
+        fn.apply(this, arguments)
+      }, cycle)
     }
-  };
+  }
 }
+
 export default {
-  name: "Carousel",
+  name: 'Carousel',
   props: {
     propData: {
       type: Array,
       default() {
         return [111, 2, 3, 4, 5, 6, 7, 8, 999];
-      }
+      },
     },
     options: {
       type: Object,
@@ -166,15 +171,15 @@ export default {
           horizontal: true,
           threeOrAll: true,
           clickAble: false,
-          width: "50%",
-          marginLeft: "30%",
-          height: "3.5rem",
-          fontSize: "32px",
-          spaceBetween: "1rem",
-          radiusMutiply: 1
+          width: '50%',
+          marginLeft: '30%',
+          height: '3.5rem',
+          fontSize: '32px',
+          spaceBetween: '1rem',
+          radiusMutiply: 1,
         };
-      }
-    }
+      },
+    },
   },
   data() {
     return {
@@ -182,10 +187,10 @@ export default {
       throttleSetId: undefined,
       //  以下为内部属性
       //  实例出的carousel对象
-      carousel: "",
+      carousel: '',
       //  是否处于拖拽状态
       isEdit: false,
-      isEditTime: "",
+      isEditTime: '',
       //  计算移动距离相关
       startPosition: 0,
       lastPosition: 0,
@@ -194,11 +199,13 @@ export default {
       //  与数据对应的id
       selectId: 0,
       //  与子项对应的id
-      selectOrderId: 0
+      selectOrderId: 0,
+
       //  用于渲染子项的数据
       //  propData: [101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117],
       //  propData: ['static/images/index_mode_auto.png','static/images/index_mode_cool.png',
       //  'static/images/index_mode_dry.png','static/images/index_mode_fan.png'],
+
       //  外部状态/数据定义，通过父组件配置options传入
       //  options: {
       //    isShow: true,
@@ -209,6 +216,7 @@ export default {
       //    controlMode: 2,
       //    //  水平显示or竖直显示
       //    horizontal: false,
+
       //    //  还需配置的项：容器大小，元素大小（）
       //  },
     };
@@ -217,7 +225,7 @@ export default {
     //  为解决传入值数量可能过少的问题，通过传入值的数据来重新渲染一份用于循环渲染的数据
     //  规则：2个3个时乘5,4个时乘3,5-9个时乘2,10个及以上不处理
     computedData() {
-      console.log("感知到了变化-----");
+      console.log('感知到了变化-----');
       const tmpPropData = [];
       this.propData.forEach((item, index) => {
         const tmpItem = { id: index, content: item };
@@ -229,6 +237,7 @@ export default {
       //  }
       // console.log('所有子项的数据: ');
       // console.log(tmpPropData);
+
       const len = tmpPropData.length;
       const result = [];
       switch (len) {
@@ -278,17 +287,17 @@ export default {
         ? threeId.push(0)
         : threeId.push(this.selectOrderId + 1);
       return threeId;
-    }
+    },
   },
   watch: {
     computedData: function computedData() {
       this.$nextTick(() => {
         this.redraw();
       });
-    }
+    },
   },
   created() {
-    this.throttleSetId = throttle(this._setId, SETID_DELAY);
+    this.throttleSetId = throttle(this._setId, SETID_DELAY)
   },
   mounted() {
     this.init_Mode();
@@ -296,43 +305,38 @@ export default {
   methods: {
     // 重绘函数，用于动态传入数据时使用，根据当前的 computedData 重新计算并绘制
     redraw() {
-      console.log('执行重绘函数-------')
       const tempSelectId = this.selectId;
+
       // 先保留当前选中的id，若新传入的值比现在多，则仍使用当前值，若
       // console.log('redraw');
       // console.log(this);
-      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.modify();
-      const figures = itemsWrapper.getElementsByTagName("figure");
+      const figures = itemsWrapper.getElementsByTagName('figure');
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.width = `${this.carousel.panelWith}px`;
       }
+
       //  此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
       // const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       // const figures = itemsWrapper.getElementsByTagName('figure');
+
       // 这一段代码用来给结束动作添加动画，但在调用重绘函数时，是不必要的
-      itemsWrapper.style.transition = "transform 0s";
-      itemsWrapper.style.WebkitTransition = "transform 0s";
-
+      itemsWrapper.style.transition = 'transform 0s';
       for (let i = 0; i < figures.length; i += 1) {
-        figures[i].style.transition = "transform 0s";
-        figures[i].style.WebkitTransition = "transform 0s";
+        figures[i].style.transition = 'transform 0s';
       }
+
       // this.$refs["contentWrapper"].style.transition = 'opacity .2s';
+      const contentWrapper = this.$el.querySelectorAll('.content-wrapper');
+      contentWrapper[this.selectId].style.transition = 'opacity 0s';
 
-      // const contentWrapper = this.$el.querySelectorAll(".content-wrapper");
-      // contentWrapper[this.selectId].style.transition = "opacity 0s";
-
-      console.log(this.$refs.contentWrapper[this.selectId])
-      this.$refs.contentWrapper[this.selectId].style.transition = "opacity 0s";
-      this.$refs.contentWrapper[this.selectId].style.WebkitTransition = "opacity 0s";
-
-      console.log("--------------------");
-      const exceed = this.propData.length - 1 - tempSelectId < 0;
+      console.log('--------------------');
+      const exceed = (this.propData.length - 1 - tempSelectId < 0);
       // console.log(exceed)
       // 滚动到对应角度，
-      this.selectId = exceed ? this.propData.length - 1 : tempSelectId;
+      this.selectId = (exceed) ? this.propData.length - 1 : tempSelectId;
       this.selectOrderId = this.selectId;
       this.carousel.rotation =
         -1 * this.carousel.theta * parseInt(this.selectId, 10);
@@ -342,20 +346,21 @@ export default {
     init_Mode() {
       //  document.getElementById('itemsWrapper')
       //  this.$el.querySelector("#itemsWrapper")
-      this.carousel = new Carousel(this.$el.querySelector("#itemsWrapper"));
+      this.carousel = new Carousel(this.$el.querySelector('#itemsWrapper'));
       // 把对组件的配置项传入滚轮实例
       this.carousel.totalPanelCount = this.computedData.length;
       this.carousel.isHorizontal = this.options.horizontal;
       this.carousel.radiusMutiply = this.options.radiusMutiply || 1;
       this.carousel.modify();
-      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
-      const figures = itemsWrapper.getElementsByTagName("figure");
+      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      const figures = itemsWrapper.getElementsByTagName('figure');
       for (let i = 0; i < figures.length; i += 1) {
         figures[i].style.width = `${this.carousel.panelWith}px`;
       }
     },
+
     _touchstart(event) {
-      if (!this.options.controlAble || this.isEdit) return;
+      if (!this.options.controlAble) return;
       //  状态监控：
       this.isEdit = true;
       this.isEditTime = event.timeStamp || Date.now();
@@ -368,14 +373,11 @@ export default {
         this.lastMoveStart = this.startPosition;
         this.lastMoveTime = event.timeStamp || Date.now();
         this.initR_mode = this.carousel.rotation;
-        const itemsWrapper = this.$el.querySelector("#itemsWrapper");
-        const figures = itemsWrapper.getElementsByTagName("figure");
-        itemsWrapper.style.transition = "transform 0s";
-        itemsWrapper.style.WebkitTransition = "transform 0s";
-
+        const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+        const figures = itemsWrapper.getElementsByTagName('figure');
+        itemsWrapper.style.transition = 'transform 0s';
         for (let i = 0; i < figures.length; i += 1) {
-          figures[i].style.transition = "transform 0s";
-          figures[i].style.WebkitTransition = "transform 0s";
+          figures[i].style.transition = 'transform 0s';
         }
       }
     },
@@ -394,8 +396,9 @@ export default {
         const moveX = this.options.horizontal
           ? nowX - this.startPosition
           : this.startPosition - nowX;
+
         const valpresect =
-          moveX / this.carousel.panelWith * this.carousel.theta;
+          (moveX / this.carousel.panelWith) * this.carousel.theta;
         let ChangeRotate = valpresect;
         ChangeRotate = parseInt(ChangeRotate, 10);
         if (this.carousel.rotation !== ChangeRotate) {
@@ -413,24 +416,21 @@ export default {
       }
     },
     _touchend(event) {
-      // 防止多点触控引发 多个 touchstart 和 touchend 事件
-      if (!this.options.controlAble || !this.isEdit || event.touches.length) return;
+      if (!this.options.controlAble) return;
       this.isEdit = false;
       this.isEditTime = event.timeStamp || Date.now();
-      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
-      const figures = itemsWrapper.getElementsByTagName("figure");
+      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
+      const figures = itemsWrapper.getElementsByTagName('figure');
       // 这一段代码用来给结束动作添加动画，但在调用重绘函数时，是不必要的
-      itemsWrapper.style.transition = "transform 0.2s";
-      itemsWrapper.style.WebkitTransition = "transform 0.2s";
-
+      itemsWrapper.style.transition = 'transform 0.2s';
       for (let i = 0; i < figures.length; i += 1) {
-        figures[i].style.transition = "transform 0.2s";
-        figures[i].style.WebkitTransition = "transform 0.2s";
-
+        figures[i].style.transition = 'transform 0.2s';
       }
+
       const moveX = this.lastPosition - this.lastMoveStart;
       //  const checkMove = this.lastPosition - this.startPosition;
       //  const checkDis = Math.abs(checkMove);
+
       /**
        * 缓动代码
        */
@@ -439,7 +439,7 @@ export default {
       const dir = v > 0 ? -1 : 1; //  加速度方向
       const deceleration = dir * 0.0006;
       const duration = v / deceleration; //  速度消减至0所需时间
-      const dist = v * duration / 2; // 最终移动多少
+      const dist = (v * duration) / 2; // 最终移动多少
       let val = parseInt(dist / (moveX * 2), 10);
       if (val > 15 || val < -15) {
         val = -1 * 15 * dir;
@@ -447,12 +447,12 @@ export default {
       if (isNaN(val)) val = 0;
       // 根据方向补剩余移动量
       let tmp =
-        (this.carousel.theta + this.carousel.rotation % this.carousel.theta) %
+        (this.carousel.theta + (this.carousel.rotation % this.carousel.theta)) %
         this.carousel.theta;
       if (dir === 1) {
         // 手左滑
         // 不够20%不移动
-        if (tmp * 100 / this.carousel.theta < 80) {
+        if ((tmp * 100) / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation - tmp;
           this.carousel.rotation +=
             Math.abs(val) * dir * -1 * this.carousel.theta;
@@ -464,7 +464,7 @@ export default {
       } else {
         // 手右滑
         tmp = this.carousel.theta - Math.abs(tmp);
-        if (tmp * 100 / this.carousel.theta < 80) {
+        if ((tmp * 100) / this.carousel.theta < 80) {
           this.carousel.rotation = this.carousel.rotation + tmp;
           this.carousel.rotation +=
             Math.abs(val) * dir * -1 * this.carousel.theta;
@@ -474,6 +474,7 @@ export default {
         }
       }
       this.carousel.transform();
+
       //  状态监控：
       this.isEdit = false;
       const selectIdTmp =
@@ -485,7 +486,7 @@ export default {
           : this.carousel.totalPanelCount - selectIdTmp;
       this.selectId = this.selectOrderId % this.propData.length;
       //  向父组件传出事件：
-      this.$emit("currentChange", this.selectId);
+      this.$emit('currentChange', this.selectId);
     },
     changeMode(e) {
       if (!this.options.controlAble) return;
@@ -501,66 +502,51 @@ export default {
     },
     // 设置组件显示位置 方法
     setId(id) {
-      this.throttleSetId(id);
+      this.throttleSetId(id)
     },
     _setId(id) {
       // 性能优化：由于动画操作消耗性能，加入无需进行改变的判断条件 和 函数节流 机制
-      if (this.selectId === id) return;
-      console.log("确实执行了改变");
+      if(this.selectId === id) return;
+      console.log('确实执行了改变')
       //  此处单独设置取消了此操作的动画，需要切换动画时屏蔽此段代码
-      const itemsWrapper = this.$el.querySelector("#itemsWrapper");
+      const itemsWrapper = this.$el.querySelector('#itemsWrapper');
       // const figures = itemsWrapper.getElementsByTagName('figure');
-      itemsWrapper.style.transition = "transform 0s";
-      itemsWrapper.style.WebkitTransition = "transform 0s";
+      itemsWrapper.style.transition = 'transform 0s';
 
       // this.$refs["contentWrapper"].style.transition = 'opacity .2s';
-
-      // const contentWrapper = this.$el.querySelectorAll(".content-wrapper");
-      // contentWrapper[this.selectId].style.transition = "opacity 0s";
-      const contentWrapper = this.$refs.contentWrapper
-
-      contentWrapper[this.selectId].style.transition = "opacity 0s";
-      contentWrapper[this.selectId].style.WebkitTransition = "opacity 0s";
+      const contentWrapper = this.$el.querySelectorAll('.content-wrapper');
+      contentWrapper[this.selectId].style.transition = 'opacity 0s';
 
       // 滚动到对应角度
       this.selectId = id;
       this.selectOrderId = this.selectId;
       this.carousel.rotation = -1 * this.carousel.theta * parseInt(id, 10);
       this.carousel.transform();
-      contentWrapper[this.selectId].style.transition = "opacity 0.5s";
-      contentWrapper[this.selectId].style.WebkitTransition = "opacity 0.5s";
 
+      contentWrapper[this.selectId].style.transition = 'opacity 0.5s';
     }
-  }
+  },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 /* 在此处设置渐显动画 */
-.show {
+.content-wrapper {
   opacity: 1;
-  -webkit-transition: opacity 0.5s;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
   transition: opacity 0.5s;
   /* background: red; */
 }
 /* 在此处设置渐隐动画 */
 .hidden {
   opacity: 0;
-  -webkit-transition: opacity 0.5s;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
   transition: opacity 0.5s;
 }
 .showThreeItems {
   opacity: 0;
-  -webkit-transition: opacity 0.5s;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
   transition: opacity 0.5s;
 }
+
 .carousel-wrapper {
   /* position: absolute; */
   display: block;
@@ -579,6 +565,7 @@ export default {
   height: 100%;
   background-color: black;
 }
+
 .container_mode {
   /* 在此可配置子项密度 */
   width: 30%;
@@ -593,6 +580,7 @@ export default {
   -o-perspective: 1100px;
   perspective: 1100px;
 }
+
 #itemsWrapper {
   position: relative;
   text-align: center;
@@ -605,18 +593,21 @@ export default {
   -o-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+
 .ready #itemsWrapper {
   -webkit-transition: -webkit-transform 1s;
   -moz-transition: -moz-transform 1s;
   -o-transition: -o-transform 1s;
   transition: transform 1s;
 }
+
 #itemsWrapper.panels-backface-invisible figure {
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   -o-backface-visibility: hidden;
   backface-visibility: hidden;
 }
+
 #itemsWrapper figure {
   display: block;
   position: absolute;
@@ -624,12 +615,14 @@ export default {
   top: 10px;
   text-align: center;
 }
+
 .ready #itemsWrapper figure {
   -webkit-transition: opacity 1s, -webkit-transform 1s;
   -moz-transition: opacity 1s, -moz-transform 1s;
   -o-transition: opacity 1s, -o-transform 1s;
   transition: opacity 1s, transform 1s;
 }
+
 @keyframes modeAnimate {
   0% {
     opacity: 0;
@@ -672,6 +665,7 @@ export default {
     opacity: 1;
   }
 }
+
 #model-guide {
   display: none;
   position: absolute;
